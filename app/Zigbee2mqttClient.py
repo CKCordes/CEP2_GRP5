@@ -1,3 +1,5 @@
+# This document is entirely from Stefan
+
 from __future__ import annotations
 import json
 from dataclasses import dataclass
@@ -9,6 +11,8 @@ from typing import Any, Callable, List, Optional
 from paho.mqtt.client import Client as MqttClient, MQTTMessage
 from paho.mqtt import publish, subscribe
 
+MQTT_BROKER_HOST = "localhost"
+MQTT_BROKER_PORT = 1883
 
 class Zigbee2mqttMessageType(Enum):
     """ Enumeration with the type of messages that zigbee2mqtt publishes.
@@ -122,9 +126,9 @@ class Zigbee2mqttClient:
     ROOT_TOPIC = "zigbee2mqtt/#"
 
     def __init__(self,
-                 host: str,
                  on_message_clbk: Callable[[Optional[Zigbee2mqttMessage]], None],
-                 port: int = 1883,
+                 host: str = MQTT_BROKER_HOST,
+                 port: int = MQTT_BROKER_PORT,
                  topics: List[str] = [ROOT_TOPIC]):
         """ Class initializer where the MQTT broker's host and port can be set, the list of topics
         to subscribe and a callback to handle events from zigbee2mqtt.
@@ -143,9 +147,9 @@ class Zigbee2mqttClient:
         self.__client.on_message = self.__on_message
         self.__connected = False
         self.__events_queue = Queue()
-        self.__host = host
+        self.__mqtt_host = host
         self.__on_message_clbk = on_message_clbk
-        self.__port = port
+        self.__mqtt_port = port
         self.__stop_worker = Event()
         self.__subscriber_thread = Thread(target=self.__worker,
                                           daemon=True)
@@ -195,8 +199,8 @@ class Zigbee2mqttClient:
         # More information can be found in
         # https://pagefault.blog/2020/02/05/how-to-set-up-persistent-storage-for-mosquitto-mqtt-broker
         def health_check_subscriber():
-            message = subscribe.simple(hostname=self.__host,
-                                       port=self.__port,
+            message = subscribe.simple(hostname=self.__mqtt_host,
+                                       port=self.__mqtt_port,
                                        topics="zigbee2mqtt/bridge/response/health_check")
 
             if message:
@@ -236,35 +240,25 @@ class Zigbee2mqttClient:
             self.__client.unsubscribe(t)
         self.__client.disconnect()
 
+    # Refer to paho-mqtt documentation for more information on the following callbacks:
+    # https://www.eclipse.org/paho/index.php?page=clients/python/docs/index.php#callbacks
+    
     def __on_connect(self, client, userdata, flags, rc) -> None:
         """ Callback invoked when a connection with the MQTT broker is established.
-
-        Refer to paho-mqtt documentation for more information on this callback:
-        https://www.eclipse.org/paho/index.php?page=clients/python/docs/index.php#callbacks
         """
-
-        # Set connected flag to true. This is later used if multiple calls to connect are made. This
-        # way the user does not need to very if the client is connected.
+        
         self.__connected = True
         print("MQTT client connected")
 
     def __on_disconnect(self, client, userdata, rc) -> None:
         """ Callback invoked when the client disconnects from the MQTT broker occurs.
-
-        Refer to paho-mqtt documentation for more information on this callback:
-        https://www.eclipse.org/paho/index.php?page=clients/python/docs/index.php#callbacks
         """
-
-        # Set connected flag to false. This is later used if multiple calls to connect are made.
-        # This way the user does not need to very if the client is connected.
+        
         self.__connected = False
         print("MQTT client disconnected")
 
     def __on_message(self, client, userdata, message: MQTTMessage) -> None:
         """ Callback invoked when a message has been received on a topic that the client subscribed.
-
-        Refer to paho-mqtt documentation for more information on this callback:
-        https://www.eclipse.org/paho/index.php?page=clients/python/docs/index.php#callbacks
         """
 
         # Push a message to the queue. This will later be processed by the worker.
@@ -281,14 +275,10 @@ class Zigbee2mqttClient:
                 # Pull a message from the queue.
                 message = self.__events_queue.get(timeout=1)
             except Empty:
-                # This exception is raised when the queue pull times out. Ignore it and retry a new
-                # pull.
+                # This exception is raised when the queue pull times out. Ignore it and retry a new pull.
                 pass
             else:
-                # If a message was successfully pulled from the queue, then process it.
-                # NOTE: this else condition is part of the try and it is executed when the action
-                # inside the try does not throws and exception.
-                # The decode() transforms a byte array into a string, following the utf-8 encoding.
+                # If a message was successfully pulled from the queue, then process it and callback the function on the tracker.
                 if message:
                     self.__on_message_clbk(Zigbee2mqttMessage.parse(message.topic,
-                                                                        message.payload.decode("utf-8")))
+                                                                    message.payload.decode("utf-8")))

@@ -3,7 +3,9 @@ from dataclasses import dataclass
 from typing import Any
 import requests
 
+DATABASE_HTTP_HOST = "http://localhost:8000"
 
+# We have to introduce the HEUCOD-standard for sending the 
 @dataclass
 class WebDeviceEvent:
     """ Represents a device event that is sent to the remote web service.
@@ -29,13 +31,13 @@ class WebClient:
     """ Represents a local web client that sends events to a remote web service.
     """
 
-    def __init__(self, host: str) -> None:
+    def __init__(self, host: str = DATABASE_HTTP_HOST) -> None:
         """ Default initializer.
 
         Args:
             host (str): an URL with the address of the remote web service
         """
-        self.__host = host
+        self.__host = host 
 
     def send_event(self, event: str) -> int:
         """ Sends a new event to the web service.
