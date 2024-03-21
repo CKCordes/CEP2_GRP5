@@ -4,7 +4,7 @@ from Zigbee2mqttClient import (Zigbee2mqttClient,
                                    Zigbee2mqttMessage, Zigbee2mqttMessageType)
 from abc import ABC, abstractmethod
 
-# The trakcer will recieve data 
+# The trakcer will recieve data from zigbee
 # The devives it recieves are only appropriote for its behavior.
 
 class Tracker(ABC):
@@ -12,10 +12,10 @@ class Tracker(ABC):
     def __init__(self, devices: DevicesModel, name: str = "NoName"):
         self.name = name
         self.__devices_model = devices
-        self.__z2m_client = Zigbee2mqttClient(on_message_clbk=self.event_received)
+        self.__z2m_client = Zigbee2mqttClient(on_message_clbk=self.__event_received)
         
 
-    def event_received(self, message: Zigbee2mqttMessage) -> None:
+    def __event_received(self, message: Zigbee2mqttMessage) -> None:
 
         # If message is None (it wasn't parsed correcty in the Z2Mclient), then don't do anything.
         
@@ -44,8 +44,6 @@ class Tracker(ABC):
         if device:
             self.parse(message)
             
-            
-    
     
     @abstractmethod
     def parse():

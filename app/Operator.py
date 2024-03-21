@@ -6,9 +6,11 @@ from abc import ABC, abstractmethod
 from Tracker import Tracker
 from typing import Any, Callable, List, Optional, List
 
-def Operator(ABC):
+class Operator(ABC):
     def __init__(self, name: str = "NoName", trackers: List[str] = []):
         self.name = name
+        
+    
 
     
 

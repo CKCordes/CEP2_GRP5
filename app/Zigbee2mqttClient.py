@@ -12,7 +12,7 @@ from paho.mqtt.client import Client as MqttClient, MQTTMessage
 from paho.mqtt import publish, subscribe
 
 MQTT_BROKER_HOST = "localhost"
-MQTT_BROKER_PORT = 1883
+MQTT_BROKER_PORT = 1883 
 
 class Zigbee2mqttMessageType(Enum):
     """ Enumeration with the type of messages that zigbee2mqtt publishes.
