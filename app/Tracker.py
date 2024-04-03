@@ -9,10 +9,12 @@ from abc import ABC, abstractmethod
 
 class Tracker(ABC):
     
-    def __init__(self, devices: DevicesModel, name: str = "NoName"):
+    def __init__(self, name: str = "NoName", devices: DevicesModel = DevicesModel()):
         self.name = name
         self.__devices_model = devices
-        self.__z2m_client = Zigbee2mqttClient(on_message_clbk=self.__event_received)
+        self.__z2m_client = Zigbee2mqttClient(on_message_clbk = self.__event_received,
+                                              topics          = self.__devices_model.all_devices_as_topics(),
+                                              serving         = name)
         
 
     def __event_received(self, message: Zigbee2mqttMessage) -> None:
@@ -22,14 +24,9 @@ class Tracker(ABC):
         if not message:
             return
 
-        print(f"zigbee2mqtt event received on topic {message.topic}: {message.data}")
-
-        # If the message is not a device event, then don't do anything.
         if message.type_ != Zigbee2mqttMessageType.DEVICE_EVENT:
             return
-
-        # Parse the topic to retreive the device ID. If the topic only has one level, don't do
-        # anything.
+        
         tokens = message.topic.split("/")
         if len(tokens) <= 1:
             return
@@ -40,11 +37,38 @@ class Tracker(ABC):
         # If the device ID is known, in the devices model, then we want to use its data, because it is relevant for the tracker.
         device = self.__devices_model.find(device_id)
 
+        # If the message is not a device event, then don't do anything.
 
         if device:
+            print(f"zigbee2mqtt event received on topic {message.topic}: {message.data}")
+            # Parse the topic to retreive the device ID. If the topic only has one level, don't do
             self.parse(message)
+        else:
+            pass
+
+
+        # anything.
             
+    def start(self) -> None:
+        self.__z2m_client.connect()
+        
+        z2m_health = self.__z2m_client.check_health()
+        if z2m_health != "ok":
+            print(f"{self.name} : Zigbee2MqttClient mistake ")
+            ##self.__z2m_client.disconnect() # giver fejl som kommer helt inde i koden.
+            return
+            
+        print(f"{self.name} : Zigbee2MqttClient is OK : Starting Tracking")
+        self.initialize()
+        
+    
+    def stop(self) -> None:
+        self.__z2m_client.disconnect()
     
     @abstractmethod
-    def parse():
+    def parse(self, message):
+        pass
+    
+    @abstractmethod
+    def initialize(self):
         pass

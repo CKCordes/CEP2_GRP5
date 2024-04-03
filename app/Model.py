@@ -7,7 +7,6 @@ class ZigbeeDevice:
     type_: str
     location: str
     
-    
 class DevicesModel:
     def __init__(self):
         # key is device_id(friendly_name thing), value is a ZigbeeDevice
@@ -48,3 +47,9 @@ class DevicesModel:
                               self.__devices.items()))
 
         return devices[0][1] if len(devices) >= 1 else None
+
+    def all_devices_as_topics(self) -> list[str]:
+        topics = []
+        for id in self.__devices:
+            topics.append("zigbee2mqtt/" + id)
+        return topics

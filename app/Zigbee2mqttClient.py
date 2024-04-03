@@ -8,7 +8,7 @@ from queue import Empty, Queue
 from threading import Event, Thread
 from time import sleep
 from typing import Any, Callable, List, Optional
-from paho.mqtt.client import Client as MqttClient, MQTTMessage
+from paho.mqtt.client import Client as MqttClient, MQTTMessage, CallbackAPIVersion
 from paho.mqtt import publish, subscribe
 
 MQTT_BROKER_HOST = "localhost"
@@ -129,7 +129,8 @@ class Zigbee2mqttClient:
                  on_message_clbk: Callable[[Optional[Zigbee2mqttMessage]], None],
                  host: str = MQTT_BROKER_HOST,
                  port: int = MQTT_BROKER_PORT,
-                 topics: List[str] = [ROOT_TOPIC]):
+                 topics: List[str] = [ROOT_TOPIC],
+                 serving: str = ""):
         """ Class initializer where the MQTT broker's host and port can be set, the list of topics
         to subscribe and a callback to handle events from zigbee2mqtt.
 
@@ -141,7 +142,7 @@ class Zigbee2mqttClient:
             topics (List[str], optional): a list of topics that the client will subscribe to.
                 Defaults to ["zigbee2mqtt/#"].
         """
-        self.__client = MqttClient()
+        self.__client = MqttClient(CallbackAPIVersion.VERSION2)
         self.__client.on_connect = self.__on_connect
         self.__client.on_disconnect = self.__on_disconnect
         self.__client.on_message = self.__on_message
@@ -154,6 +155,7 @@ class Zigbee2mqttClient:
         self.__subscriber_thread = Thread(target=self.__worker,
                                           daemon=True)
         self.__topics = topics
+        self.serving = serving
 
     def connect(self) -> None:
         """ Connects to the MQTT broker specified in the initializer. This is a blocking function.
@@ -163,8 +165,8 @@ class Zigbee2mqttClient:
             return
 
         # Connect to the host given in initializer.
-        self.__client.connect(self.__host,
-                              self.__port)
+        self.__client.connect(self.__mqtt_host,
+                              self.__mqtt_port)
         self.__client.loop_start()
         # Subscribe to all topics given in the initializer.
         for t in self.__topics:
@@ -178,7 +180,7 @@ class Zigbee2mqttClient:
 
         self.__client.publish(topic=f"zigbee2mqtt/{device_id}/set",
                               payload=json.dumps({"state": f"{state}"}))
-
+    
     def check_health(self) -> str:
         """ Allows to check whether zigbee2mqtt is healthy, i.e. the service is running properly.
         
@@ -221,8 +223,8 @@ class Zigbee2mqttClient:
         # Wait for the subscriber to establish a connection with the broker.
         sleep(.5)
         # Publish the health_check request.
-        publish.single(hostname=self.__host,
-                       port=self.__port,
+        publish.single(hostname=self.__mqtt_host,
+                       port=self.__mqtt_port,
                        topic="zigbee2mqtt/bridge/request/health_check")
         # Wait until the response is received. If it is not received within 5 seconds, then return
         # the default state: "fail".
@@ -243,19 +245,19 @@ class Zigbee2mqttClient:
     # Refer to paho-mqtt documentation for more information on the following callbacks:
     # https://www.eclipse.org/paho/index.php?page=clients/python/docs/index.php#callbacks
     
-    def __on_connect(self, client, userdata, flags, rc) -> None:
+    def __on_connect(self, client, userdata, flags, rc, properties) -> None:
         """ Callback invoked when a connection with the MQTT broker is established.
         """
         
         self.__connected = True
-        print("MQTT client connected")
+        print(f"{self.serving} : MQTT client connected")
 
-    def __on_disconnect(self, client, userdata, rc) -> None:
+    def __on_disconnect(self, client, userdata, rc, properties) -> None:
         """ Callback invoked when the client disconnects from the MQTT broker occurs.
         """
         
         self.__connected = False
-        print("MQTT client disconnected")
+        print(f"{self.serving} : MQTT client disconnected")
 
     def __on_message(self, client, userdata, message: MQTTMessage) -> None:
         """ Callback invoked when a message has been received on a topic that the client subscribed.
