@@ -39,16 +39,6 @@ class Zigbee2mqttMessage:
     attributes might have a value. If the message does not have a field, its value defaults to None.
     """
 
-    # A note about dataclasses: this is a Python feature that allows to simplify the implementation
-    # of a class by only declaring its attributes (or fields) and respective types. In the
-    # background, an initializer is created that receives as arguments the declared attributes. This
-    # can be observed in the parse() method, where instances of Cep2Zigbee2mqttMessage are created
-    # with varying arguments, depending on the topic and message received.
-    # If a field is not declared with a default value, then it is mandatory in the initializer;
-    # otherwise, a value does not need to be given as argument. For this class, the topic and type_
-    # fields do not have a default value, therefore they have to be given as arguments to the
-    # initializer. All other values are optional.
-
     topic: str
     type_: Zigbee2mqttMessageType
     data: Any = None
@@ -60,26 +50,6 @@ class Zigbee2mqttMessage:
 
     @classmethod
     def parse(cls, topic: str, message: str) -> Zigbee2mqttMessage:
-        """ Parse a zigbee2mqtt JSON message, based on the received topic.
-
-        Args:
-            topic (str): message's topic
-            message (str): JSON message that will be parsed
-
-        Returns:
-            Cep2Zigbee2mqttMessage: an object with the parsed message values
-        """
-        # A note about class methods: these methods can be used to instantiate the class where it is
-        # declared. In this case, this method returns an instance of Cep2Zigbee2mqttMessage based on
-        # the topic and message that are given as arguments.
-        # In Python, like other object oriented languages, a method can be an instance method
-        # (called from an object), a static method (called from the class), or a class method
-        # (similar to static methods, but receives the class it instantiates as the first argument).
-        # This is a Python feature that is usually not found in other languages and is an
-        # implementation of the factory design pattern. More information can be found in the
-        # following links:
-        #     - Class methods: https://stackabuse.com/pythons-classmethod-and-staticmethod-explained/
-        #     - Factory design pattern: https://refactoring.guru/design-patterns/factory-method
 
         if topic == "zigbee2mqtt/bridge/state":
             instance = cls(type_=Zigbee2mqttMessageType.BRIDGE_STATE,
@@ -104,14 +74,14 @@ class Zigbee2mqttMessage:
         else:
             instance = cls(type_=Zigbee2mqttMessageType.DEVICE_EVENT,
                            topic=topic,
-                           event=json.loads(message))
+                           data=json.loads(message))
 
         return instance
 
 
 class Zigbee2mqttClient:
     """ This class implements a simple zigbee2mqtt client.
-
+    
     By default it subscribes to all events of the default topic (zigbee2mqtt/#). No methods for
     explicitly publishing to zigbee2mqtt are provided, since the class can provide higher level
     abstraction methods for this. An example implemented example is this class' check_health().
@@ -123,6 +93,7 @@ class Zigbee2mqttClient:
     methods that might take too much time to process the events or that might eventually block (for
     example, sending an event to another service).
     """
+    
     ROOT_TOPIC = "zigbee2mqtt/#"
 
     def __init__(self,
@@ -131,17 +102,8 @@ class Zigbee2mqttClient:
                  port: int = MQTT_BROKER_PORT,
                  topics: List[str] = [ROOT_TOPIC],
                  serving: str = ""):
-        """ Class initializer where the MQTT broker's host and port can be set, the list of topics
-        to subscribe and a callback to handle events from zigbee2mqtt.
 
-        Args:
-            host (str): string with the hostname, or IP address, of the MQTT broker.
-            on_message_clbk (Callable[[Zigbee2mqttMessage], None]): a function that is called when
-                a message is received from zigbee2mqtt. This returns None if the 
-            port (int): network port of the MQTT broker. Defaults to 1883.
-            topics (List[str], optional): a list of topics that the client will subscribe to.
-                Defaults to ["zigbee2mqtt/#"].
-        """
+        
         self.__client = MqttClient(CallbackAPIVersion.VERSION2)
         self.__client.on_connect = self.__on_connect
         self.__client.on_disconnect = self.__on_disconnect
@@ -282,5 +244,4 @@ class Zigbee2mqttClient:
             else:
                 # If a message was successfully pulled from the queue, then process it and callback the function on the tracker.
                 if message:
-                    self.__on_message_clbk(Zigbee2mqttMessage.parse(message.topic,
-                                                                    message.payload.decode("utf-8")))
+                    self.__on_message_clbk(Zigbee2mqttMessage.parse(message.topic, message.payload.decode("utf-8")))

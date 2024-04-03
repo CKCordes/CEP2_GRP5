@@ -1,10 +1,25 @@
 from Tracker import Tracker
+from Zigbee2mqttClient import Zigbee2mqttMessage
+from enum import Enum
 
 class KitchenStoveTracker(Tracker):
     
-    def initialize(self):
-        print(f"{self.name} : Initializeing kicken tracker")
-        pass
     
-    def parse(self, message):
-        print(f"{self.name} : recieved message : '{message}'")
+    def initialize(self):
+        self.__log(f"{self.name} : Initializeing kicken tracker")
+        
+        self.__stove_power = "OFF"
+        
+    
+    def __parse_event(self, message: Zigbee2mqttMessage):
+        
+        self.__stove_power = message.data["state"]
+        
+        
+        
+        
+        
+        
+        
+        
+        

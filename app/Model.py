@@ -1,5 +1,7 @@
 from dataclasses import dataclass
 from typing import List, Optional, Union
+from enum import Enum
+
 
 @dataclass
 class ZigbeeDevice:

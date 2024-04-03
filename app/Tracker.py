@@ -27,12 +27,12 @@ class Tracker(ABC):
         if message.type_ != Zigbee2mqttMessageType.DEVICE_EVENT:
             return
         
-        tokens = message.topic.split("/")
-        if len(tokens) <= 1:
+        topics_tokens = message.topic.split("/")
+        if len(topics_tokens) <= 1:
             return
 
         # Retrieve the device ID from the topic.
-        device_id = tokens[1]
+        device_id = topics_tokens[1]
 
         # If the device ID is known, in the devices model, then we want to use its data, because it is relevant for the tracker.
         device = self.__devices_model.find(device_id)
@@ -40,21 +40,22 @@ class Tracker(ABC):
         # If the message is not a device event, then don't do anything.
 
         if device:
-            print(f"zigbee2mqtt event received on topic {message.topic}: {message.data}")
-            # Parse the topic to retreive the device ID. If the topic only has one level, don't do
-            self.parse(message)
+            self.__log(f"event received on topic : [{message.topic}] {message.data} ' ")
+  
+            self.__parse_event(message)
         else:
+            self.__log(f"event from unknown device : [{message.topic}] {message.data} ' ")
             pass
-
-
-        # anything.
+    
+    def __log(self, *values: object):
+        print(f"{self.name} | " + values)
             
     def start(self) -> None:
         self.__z2m_client.connect()
         
         z2m_health = self.__z2m_client.check_health()
         if z2m_health != "ok":
-            print(f"{self.name} : Zigbee2MqttClient mistake ")
+            self.__log("Zigbee2MqttClient mistake")
             ##self.__z2m_client.disconnect() # giver fejl som kommer helt inde i koden.
             return
             
@@ -66,7 +67,7 @@ class Tracker(ABC):
         self.__z2m_client.disconnect()
     
     @abstractmethod
-    def parse(self, message):
+    def __parse_event(self, message: Zigbee2mqttMessage):
         pass
     
     @abstractmethod

@@ -1,5 +1,5 @@
 from Tracker import Tracker
 
 class RoomTracker(Tracker):
-    def parse():
+    def __parse_event():
         print("Hello paring from RoomTracker")
