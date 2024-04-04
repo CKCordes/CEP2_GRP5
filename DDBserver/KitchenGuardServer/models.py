@@ -29,6 +29,7 @@ class Event(models.Model):
         return self.event_id + "," + self.description
     event_id = models.CharField(max_length=200)
     sensor = models.ForeignKey(Sensor, on_delete=models.CASCADE)
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
     event_type = models.CharField(max_length=200)
     event_type_enum = models.IntegerField(default=-1)
     description = models.CharField(max_length=200)
