@@ -36,15 +36,6 @@ class DevicesModel:
             self.__devices[s.id_] = s
 
     def find(self, device_id: str) -> Optional[ZigbeeDevice]:
-        """ Retrieve a device from the database by its ID.
-
-        Args:
-            device_id (str): ID of the device to retrieve.
-
-        Returns:
-            Optional[Cep2ZigbeeDevice]: a device. If the device is not stored, then None is returned
-        """
-
         devices = list(filter(lambda kv: kv[0] == device_id,
                               self.__devices.items()))
 
