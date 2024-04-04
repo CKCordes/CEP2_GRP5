@@ -5,8 +5,11 @@ import json
 
 class KitchenStoveTracker(Tracker):
     """
-        Tracking message format: {"StoveState" : "ON" | "OFF"}
+    Requires ONE power plug actuator of the stove 
+    
+    Tracking message format: {"StoveState" : "ON" | "OFF"}
     """    
+    
     def initialize(self):
         self.log(f"Initializeing kicken tracker")
         
