@@ -13,9 +13,9 @@ from time import sleep
 
 class Tracker(ABC):
     
-    def __init__(self, name: str = "NoName", devices: DevicesModel = DevicesModel()):
+    def __init__(self, name: str = "NoNameTracker", devices: DevicesModel = DevicesModel()):
         self.name = name
-        self.__devices_model = devices
+        self.devices_model = devices
         self.__z2m_client = Zigbee2mqttClient(on_message_clbk = self.__event_received,
                                               topics          = self.__devices_model.all_devices_as_topics(),
                                               serving         = name)
@@ -61,7 +61,7 @@ class Tracker(ABC):
         
         z2m_health = self.__z2m_client.check_health()
         if z2m_health != "ok":
-            self.log("Zigbee2MqttClient mistake")
+            self.log("Zigbee2MqttClient - health check BAD")
             ##self.__z2m_client.disconnect() # giver fejl som kommer helt inde i koden.
             return
             
