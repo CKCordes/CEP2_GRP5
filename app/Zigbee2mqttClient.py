@@ -40,6 +40,7 @@ class Zigbee2mqttMessage:
     """
 
     topic: str
+    deviceID: str
     type_: Zigbee2mqttMessageType
     data: Any = None
     event: Any = None
