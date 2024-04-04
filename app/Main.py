@@ -9,13 +9,12 @@ if __name__ == "__main__":
     stove_devices_model = DevicesModel()
     stove_devices_model.add_devices([ZigbeeDevice("test", "power plug", "kitchen")])
 
-  
-    stove_tracker = KitchenStoveTracker("Stove tracker", stove_devices_model)
+    stove_tracker = KitchenStoveTracker("StoveTracker", stove_devices_model)
     stove_tracker.start()
 
     while True:
         sleep(5)
         publish.single(topic = "zigbee2mqtt/test",
-                       payload=json.dumps({"hello": "yes"}))
+                       payload=json.dumps({"state": "ON"}))
 
     stove_tracker.stop()
