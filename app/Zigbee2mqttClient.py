@@ -238,7 +238,7 @@ class Zigbee2mqttClient:
         while not self.__stop_worker.is_set():
             try:
                 # Pull a message from the queue.
-                message = self.__events_queue.get(timeout=1)
+                message: MQTTMessage = self.__events_queue.get(timeout=1)
             except Empty:
                 # This exception is raised when the queue pull times out. Ignore it and retry a new pull.
                 pass

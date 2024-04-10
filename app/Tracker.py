@@ -3,21 +3,24 @@ from WebClient import WebClient,WebDeviceEvent
 from Zigbee2mqttClient import (Zigbee2mqttClient,
                                    Zigbee2mqttMessage, Zigbee2mqttMessageType)
 from abc import ABC, abstractmethod
+from dataclasses import dataclass
 from paho.mqtt import publish 
 from threading import Event, Thread
 from time import sleep
-
 
 # The trakcer will recieve data from zigbee
 # The devives it recieves are only appropriote for its behavior.
 
 class Tracker(ABC):
     
-    def __init__(self, name: str = "NoNameTracker", devices: DevicesModel = DevicesModel()):
+    def __init__(self,
+                 name: str = "NoNameTracker", 
+                 devices: DevicesModel = DevicesModel()):
+        
         self.name = name
         self.devices_model = devices
         self.__z2m_client = Zigbee2mqttClient(on_message_clbk = self.__event_received,
-                                              topics          = self.__devices_model.all_devices_as_topics(),
+                                              topics          = self.devices_model.all_devices_as_topics(),
                                               serving         = name)
         self.__stop_sending_thread = Event()
         self.__sending_thread = Thread(target=self.__sender_worker,
@@ -42,7 +45,7 @@ class Tracker(ABC):
         message.deviceID = device_id
 
         # If the device ID is known, in the devices model, then we want to use its data, because it is relevant for the tracker.
-        device = self.__devices_model.find(device_id)
+        device = self.devices_model.find(device_id)
 
         # If the message is not a device event, then don't do anything.
 
@@ -54,19 +57,19 @@ class Tracker(ABC):
             self.log(f"event from unknown device : [{message.topic}] {message.data} ")
             pass
     
-    def log(self, *values: object):
-        print(f"{self.name} : ", values )
+    def log(self, string: str):
+        print(f"{self.name} : {string}")
             
     def start(self) -> None:
-        self.__z2m_client.connect()
         
+        self.__z2m_client.connect()
         z2m_health = self.__z2m_client.check_health()
         if z2m_health != "ok":
             self.log("Zigbee2MqttClient - health check BAD")
             ##self.__z2m_client.disconnect() # giver fejl som kommer helt inde i koden.
             return
             
-        print(f"{self.name} : Zigbee2MqttClient is OK - Starting Tracking")
+        self.log(f"{self.name} : Zigbee2MqttClient is OK - Starting tracking!")
         
         self.initialize()
         self.__sending_thread.start()
@@ -75,8 +78,7 @@ class Tracker(ABC):
     def stop(self) -> None:
         self.__z2m_client.disconnect()
         self.__stop_sending_thread.set()
-
-    
+        
     @abstractmethod 
     def tracking_message(self) -> str:
         pass 
@@ -88,9 +90,11 @@ class Tracker(ABC):
     @abstractmethod
     def initialize(self):
         pass
-    
+
     def __sender_worker(self) -> None:
         while not self.__stop_sending_thread.is_set():
             sleep(5)
             publish.single(topic = self.name,
                            payload=self.tracking_message())
+            
+    

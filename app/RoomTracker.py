@@ -4,18 +4,18 @@ import json
 
 class RoomTracker(Tracker):
     """
-        Tracking message format:    ZigbeeDevice("KitchenOccupancy" :  "TRUE" | "FALSE"),
-                                    ZigbeeDevice("BedroomOccupancy" :  "TRUE" | "FALSE"),
-                                    ZigbeeDevice("BathroomOccupancy" :  "TRUE" | "FALSE"),
-                                    ZigbeeDevice("LivingRoomOccupancy" :  "TRUE" | "FALSE"),
-                                    ZigbeeDevice("HallOccupancy" :  "TRUE" | "FALSE"),
+        Tracking message format:    {"Occupancy" : {"kitchen": true | false,
+                                                    "room1": true | false,
+                                                    ... 
+                                                    }
+                                    }
     """
     def initialize(self):
-        self.log(f"Initializing RoomTracker")
+        self.log("Initializing RoomTracker")
 
         self.__RoomsOccupancy = {}
         
-        deviceslist = self.devices_model.devices_list()
+        deviceslist = self.devices_model.devices_list
         for device in deviceslist:
             self.__RoomsOccupancy[device.location] = False
 
