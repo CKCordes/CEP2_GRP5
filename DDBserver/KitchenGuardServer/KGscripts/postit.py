@@ -6,7 +6,7 @@ url = "http://127.0.0.1:8000/KitchenGuardServer/dbupdater"
 
 # Sample JSON data
 data = {
-    'event_id': 'EV123456789999',
+    'event_id': 'EV12345679',
     'sensor': 1, 
     'patient': 1, 
     'event_type': 'Heart Rate',

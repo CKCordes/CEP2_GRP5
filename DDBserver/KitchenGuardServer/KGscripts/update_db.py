@@ -18,7 +18,7 @@ def updatedb(data):
     newEvent = Event()
     
     patient = Patient.objects.get(patient_id='Chris') # Creates an instance of a patient matching the given id. 
-    sensor = Sensor.objects.get(sensor_id='pikogpatter87') # Creates an instance of the sensor matching the id. 
+    sensor = Sensor.objects.get(sensor_id='pikogpatter87') # Creates an instance of the sensor matching the id
     
     newEvent.event_id = data["event_id"]
     newEvent.sensor = sensor 
