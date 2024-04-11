@@ -5,28 +5,6 @@ import requests
 
 DATABASE_HTTP_HOST = "http://localhost:8000"
 
-# We have to introduce the HEUCOD-standard for sending the 
-@dataclass
-class WebDeviceEvent:
-    """ Represents a device event that is sent to the remote web service.
-    """
-    device_id: str
-    device_type: str
-    measurement: Any
-
-    def to_json(self) -> str:
-        """ Serializes the object to a JSON string.
-
-        Returns:
-            str: the event in JSON format
-        """
-        # The dumps() function serializes an object to a JSON string. In this case, it serializes a
-        # dictionary.
-        return json.dumps({"deviceId": self.device_id,
-                           "deviceType": self.device_type,
-                           "measurement": self.measurement})
-
-
 class WebClient:
     """ Represents a local web client that sends events to a remote web service.
     """
@@ -37,9 +15,9 @@ class WebClient:
         Args:
             host (str): an URL with the address of the remote web service
         """
-        self.__host = host 
+        self.__host = host
 
-    def send_event(self, event: str) -> int:
+    def send_event(self, encoded_heucod: str) -> int:
         """ Sends a new event to the web service.
 
         Args:
@@ -53,7 +31,7 @@ class WebClient:
         """
         try:
             # A new event is sent as an HTTP POST request.
-            response = requests.post(self.__host, data=event)
+            response = requests.post(self.__host, data=encoded_heucod)
 
             return response.status_code
         except requests.exceptions.ConnectionError:

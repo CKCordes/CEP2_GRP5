@@ -326,6 +326,7 @@ class HeucodEvent:
 
 
 if __name__ == "__main__":
+    """
     # Example for a PIR event that detected a person leaving its bed. The sensor reports occupancy
     # as false, since it doesn't detect movement. Once it detects movement, it reports occupancy = true.
     event_bed_occupancy = HeucodEvent()
@@ -364,3 +365,4 @@ if __name__ == "__main__":
     
     event = HeucodEvent.from_json('{"timestamp": 1648473393, "value": true, "eventType": "OpenCare.EVODAY.EDL.BedOccupancyEvent", "eventTypeEnum": 82043, "patientId": "patient-0001", "deviceModel": "RTCGQ11LM", "deviceVendor": "Aqara", "gatewayId": "gateway-0001", "id": "0001"}')
     print(event)
+    """
