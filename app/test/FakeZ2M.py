@@ -12,14 +12,14 @@ if __name__ == "__main__":
     
     while True:
         message = subscribe.simple(hostname=MQTT_BROKER_HOST,
-                                    port=1883,
-                                    topics="zigbee2mqtt/bridge/request/health_check",
-                                    keepalive=10000)
+                                   port=MQTT_BROKER_PORT,
+                                   topics="zigbee2mqtt/bridge/request/health_check",
+                                   keepalive=10000)
         if message:
             publish.single(payload=json.dumps({"status": "ok"}),
-                            hostname=MQTT_BROKER_HOST,
-                            port=MQTT_BROKER_PORT,
-                            topic="zigbee2mqtt/bridge/response/health_check")
+                         hostname=MQTT_BROKER_HOST,
+                         port=MQTT_BROKER_PORT,
+                         topic="zigbee2mqtt/bridge/response/health_check")
             
             print("Have send a response")
 

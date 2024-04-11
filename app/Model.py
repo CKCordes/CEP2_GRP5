@@ -10,13 +10,17 @@ class ZigbeeDevice:
     location: str
     
 class DevicesModel:
-    def __init__(self):
+    def __init__(self, device: Union[ZigbeeDevice, List[ZigbeeDevice]] = []):
         # key is device_id(friendly_name thing), value is a ZigbeeDevice
         self.__devices: dict[str, ZigbeeDevice] = {}
+        
+        if device != []:
+            self.add_devices(device)
+        
 
     @property
     def actuators_list(self) -> List[ZigbeeDevice]:
-        return list(filter(lambda s: s.type_ in {"led", "power plug"},
+        return list(filter(lambda s: s.type_ in {"led", "power_plug"},
                            self.__devices.values()))
 
     @property

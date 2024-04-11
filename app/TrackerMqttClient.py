@@ -18,10 +18,11 @@ class TrackerClient:
     STANDARD_TOPIC = "no_topic"
 
     def __init__(self,
-                 on_message_clbk: Callable[...],
+                 on_message_clbk: Callable[[str, str], None],
                  host: str = MQTT_BROKER_HOST,
                  port: int = MQTT_BROKER_PORT,
-                 topics: List[str] = [STANDARD_TOPIC]):
+                 topics: List[str] = [STANDARD_TOPIC],
+                 serving: str = "NotServingAnyOne"):
         
         self.__client = MqttClient(CallbackAPIVersion.VERSION2)
         self.__client.on_connect = self.__on_connect
@@ -36,6 +37,7 @@ class TrackerClient:
         self.__subscriber_thread = Thread(target=self.__worker,
                                           daemon=True)
         self.__topics = topics
+        self.serving = serving
 
     def connect(self) -> None:
         """ Connects to the MQTT broker specified in the initializer. This is a blocking function.
@@ -65,22 +67,20 @@ class TrackerClient:
             self.__client.unsubscribe(t)
         self.__client.disconnect()
 
-    # Refer to paho-mqtt documentation for more information on the following callbacks:
-    # https://www.eclipse.org/paho/index.php?page=clients/python/docs/index.php#callbacks
-    
+
     def __on_connect(self, client, userdata, flags, rc, properties) -> None:
         """ Callback invoked when a connection with the MQTT broker is established.
         """
         
         self.__connected = True
-        print("MQTT client connected")
+        print(f"{self.serving} : Tracker client connected")
 
     def __on_disconnect(self, client, userdata, rc, properties) -> None:
         """ Callback invoked when the client disconnects from the MQTT broker occurs.
         """
         
         self.__connected = False
-        print("MQTT client disconnected")
+        print(f"{self.serving} : Tracker client disconnected")
 
     def __on_message(self, client, userdata, message: MQTTMessage) -> None:
         """ Callback invoked when a message has been received on a topic that the client subscribed.
@@ -98,11 +98,11 @@ class TrackerClient:
         while not self.__stop_worker.is_set():
             try:
                 # Pull a message from the queue.
-                message = self.__events_queue.get(timeout=1)
+                message: MQTTMessage = self.__events_queue.get(timeout=1)
             except Empty:
                 # This exception is raised when the queue pull times out. Ignore it and retry a new pull.
                 pass
             else:
                 # If a message was successfully pulled from the queue, then process it and callback the function on the tracker.
                 if message:
-                    self.__on_message_clbk(message)
+                    self.__on_message_clbk(message.topic, message.payload.decode())
