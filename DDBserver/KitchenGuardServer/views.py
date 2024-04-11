@@ -12,7 +12,7 @@ from django.contrib.auth import authenticate, login as auth_login
 def index(request):
     patient_list = Patient.objects.order_by("-patient_id")[:5]
     output = ", ".join([q.patient_id for q in patient_list])
-    return HttpResponse(output)
+    return render(request, "index.html")
 
 def login(request):
     if request.method == 'POST':
