@@ -24,6 +24,9 @@ class Operator(ABC):
                                               topics          = [],
                                               serving         = self.name)
                                               
+        self.__stop_operating_thread = Event()
+        self.__operating_thread = Thread(target=self.__opearate_worker,
+                                       daemon=True)
         
     def __message_received(self, trackername: str, message: str) -> None:
         if trackername in self.__trackers:
@@ -50,10 +53,12 @@ class Operator(ABC):
         self.__tracker_client.connect()
         
         self.initialize()
+        self.__operating_thread.start()
         
     
     def stop(self) -> None:
         self.__z2m_client.disconnect()
+        self.__stop_operating_thread.set()
     
     @abstractmethod
     def parse_message(self, tracker_name: str, message: str):
@@ -62,3 +67,12 @@ class Operator(ABC):
     @abstractmethod
     def initialize(self):
         pass
+    
+    @abstractmethod
+    def operate(self):
+        pass
+    
+    def __opearate_worker(self) -> None:
+        while not self.__stop_operating_thread.is_set():
+            sleep(5)
+            self.operate()

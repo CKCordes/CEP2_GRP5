@@ -4,8 +4,8 @@ import json
 
 class RoomTracker(Tracker):
     """
-        Tracking message format:    {"Occupancy" : {"kitchen": true | false,
-                                                    "room1": true | false,
+        Tracking message format:    {"occupancy" : {"kitchen": True | False,
+                                                    "room1": True | False,
                                                     ... 
                                                     }
                                     }
@@ -25,4 +25,4 @@ class RoomTracker(Tracker):
         self.__RoomsOccupancy[device.location] = message.data["occupancy"]
 
     def tracking_message(self) -> str:
-        return json.dumps({"Occupancy": self.__RoomsOccupancy})
+        return json.dumps({"occupancy": self.__RoomsOccupancy})
