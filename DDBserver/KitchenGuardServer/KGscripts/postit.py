@@ -6,9 +6,19 @@ url = "http://127.0.0.1:8000/KitchenGuardServer/dbupdater"
 
 # Sample JSON data
 data = {
-    "name": "John Doe",
-    "age": 30,
-    "city": "New York"
+    'event_id': 'EV123456789999',
+    'sensor': 1, 
+    'patient': 1, 
+    'event_type': 'Heart Rate',
+    'event_type_enum': 1,
+    'description': 'Patients heart rate is above normal range.',
+    'advanced': 'Advanced monitoring required.',
+    'timestamp': 1,
+    'start_time': 1,
+    'end_time': 1,
+    'length': 10, # Length in minutes
+    'value': '100',
+    'unit': 'bpm',
 }
 
 # Convert data to JSON string
