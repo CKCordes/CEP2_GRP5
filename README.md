@@ -1,4 +1,4 @@
-# Kitchen Guard Project ReadMe
+# Kitchen Guard Project
 
 **Introduction:**
 
@@ -16,8 +16,7 @@ Kitchen Guard is a distributed system aimed at enhancing kitchen safety, particu
 
 **Platform and Technologies:**
 
-- Server: NodeJS, PHP, ASP.NET, or Blazor (.NET)
-- Sensors: Zigbee-based sensors, PIR sensors
-- Controller: Raspberry Pi (Python code provided, but other platforms and languages are welcome)
+- Server: Python Django
+- Sensors: Zigbee-based sensors
+- Controller: Raspberry Pi
 - Communication Protocol: MQTT with JSON encoding
-
