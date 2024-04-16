@@ -75,7 +75,7 @@ class TrackerClient:
         self.__connected = True
         print(f"{self.serving} : Tracker client connected")
 
-    def __on_disconnect(self, client, userdata, rc, properties) -> None:
+    def __on_disconnect(self, client, userdata, rc, properties, extra) -> None:
         """ Callback invoked when the client disconnects from the MQTT broker occurs.
         """
         

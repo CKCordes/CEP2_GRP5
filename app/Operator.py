@@ -6,6 +6,8 @@ from abc import ABC, abstractmethod
 from threading import Event, Thread
 from time import sleep
 from typing import List
+import json
+import time
 
 class Operator(ABC):
     def __init__(self, 
@@ -14,12 +16,13 @@ class Operator(ABC):
                  tracker_topics: List[str] = [] ):
         
         self.name = name
-        self.devices_model = actuators 
-        self.__trackers = tracker_topics
+        self.actuator_devices = actuators 
+        self.trackers = tracker_topics
         self.__tracker_client = TrackerClient(on_message_clbk = self.__message_received,
-                                              topics          = tracker_topics,
+                                              topics          = self.trackers,
                                               serving         = self.name)
         
+        # entirely for actuators
         self.__z2m_client = Zigbee2mqttClient(on_message_clbk = None,
                                               topics          = [],
                                               serving         = self.name)
@@ -29,15 +32,18 @@ class Operator(ABC):
                                        daemon=True)
         
     def __message_received(self, trackername: str, message: str) -> None:
-        if trackername in self.__trackers:
+        
+        if trackername in self.trackers:
             self.log(f"message received: [{trackername}] {message} ")
-            self.parse_message(trackername, message)
+            json_message = json.loads(message)
+            self.parse_message(trackername, json_message)
         else:
             self.log(f"event from unknown tracker : [{trackername}] {message} ")
             pass
         
     def log(self, string: str):
-        print(f"{self.name} : {string}"  )
+        now = time.strftime('%X')
+        print(f"[{now}] {self.name} : {string}"  )
     
     def start(self) -> None:
         self.__z2m_client.connect()

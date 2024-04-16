@@ -7,6 +7,7 @@ from dataclasses import dataclass
 from paho.mqtt import publish 
 from threading import Event, Thread
 from time import sleep
+import time
 
 # The trakcer will recieve data from zigbee
 # The devives it recieves are only appropriote for its behavior.
@@ -58,7 +59,8 @@ class Tracker(ABC):
             pass
     
     def log(self, string: str):
-        print(f"{self.name} : {string}")
+        now = time.strftime('%X')
+        print(f"[{now}] {self.name} : {string}"  )
             
     def start(self) -> None:
         
