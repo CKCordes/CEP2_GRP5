@@ -1,4 +1,4 @@
-from Operator import Operator
+from .HomeHelper.Operator import Operator
 from typing import List
 from time import time
 

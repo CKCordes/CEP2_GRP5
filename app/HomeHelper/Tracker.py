@@ -1,6 +1,6 @@
-from Model import DevicesModel
-from WebClient import WebClient,WebDeviceEvent
-from Zigbee2mqttClient import (Zigbee2mqttClient,
+from .Model import DevicesModel
+from .WebClient import WebClient,WebDeviceEvent
+from .Zigbee2mqttClient import (Zigbee2mqttClient,
                                    Zigbee2mqttMessage, Zigbee2mqttMessageType)
 from abc import ABC, abstractmethod
 from dataclasses import dataclass

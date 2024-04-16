@@ -1,4 +1,4 @@
-# This document is entirely from Stefan
+# This document is mostly from Stefan
 
 from __future__ import annotations
 import json
