@@ -2,12 +2,15 @@ from dataclasses import dataclass
 from typing import List, Optional, Union
 from enum import Enum
 
-
 @dataclass
 class ZigbeeDevice:
     id_: str
     type_: str
     location: str
+
+class LEDstrip(ZigbeeDevice):
+    pass
+
     
 class DevicesModel:
     def __init__(self, device: Union[ZigbeeDevice, List[ZigbeeDevice]] = []):
@@ -23,6 +26,7 @@ class DevicesModel:
         return list(filter(lambda s: s.type_ in {"led", "power_plug"},
                            self.__devices.values()))
 
+
     @property
     def devices_list(self) -> List[ZigbeeDevice]:
         return list(self.__devices.values())
@@ -32,6 +36,10 @@ class DevicesModel:
         return list(filter(lambda s: s.type_ in {"pir"},
                            self.__devices.values()))
 
+    def get_type(self, device_type: str) -> List[ZigbeeDevice]:
+        return list(filter(lambda s: s.type_ is device_type,
+                           self.__devices.values()))
+        
     def add_devices(self, device: Union[ZigbeeDevice, List[ZigbeeDevice]]) -> None:
 
         list_devices = [device] if isinstance(device, ZigbeeDevice) else device

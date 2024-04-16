@@ -1,9 +1,10 @@
-from time import sleep
-from Model import DevicesModel, ZigbeeDevice
-from KitchenStoveTracker import KitchenStoveTracker
-from RoomTracker import RoomTracker
-from KitchenGuardOperator import KitchenGuardOperator
+from .HomeHelper import *
+from .HomeHelper.Model import DevicesModel, ZigbeeDevice, LEDstrip
+from .KitchenStoveTracker import KitchenStoveTracker
+from .RoomTracker import RoomTracker
+from .KitchenGuardOperator import KitchenGuardOperator
 from paho.mqtt import publish, subscribe
+from time import sleep
 import json
 
 if __name__ == "__main__":
@@ -19,9 +20,14 @@ if __name__ == "__main__":
     stove_tracker = KitchenStoveTracker("Stove_Tracker", stove_power_model) 
     
     
+    
     # Kitchen guard operator
+    lights = LEDstrip("test_lights", "led", "livingroom")
+    kitchenguard_devices = stove_power_model
+    kitchenguard_devices.add_devices(lights)
+    
     kitchen_guard_operator = KitchenGuardOperator("KitchenGuard", 
-                                                   stove_power_model, 
+                                                   kitchenguard_devices, 
                                                    [room_tracker.name, stove_tracker.name])
     
     # Start the program
