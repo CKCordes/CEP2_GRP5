@@ -1,5 +1,4 @@
 from .Model import DevicesModel
-from .WebClient import WebClient,WebDeviceEvent
 from .Zigbee2mqttClient import (Zigbee2mqttClient,
                                    Zigbee2mqttMessage, Zigbee2mqttMessageType)
 from abc import ABC, abstractmethod
@@ -29,8 +28,7 @@ class Tracker(ABC):
         
     def __event_received(self, message: Zigbee2mqttMessage) -> None:
 
-        # If message is None (it wasn't parsed correcty in the Z2Mclient), then don't do anything.
-        
+        # If message is None (it wasn't parsed correcty in the Z2Mclient), then don't do anything
         if not message:
             return
 

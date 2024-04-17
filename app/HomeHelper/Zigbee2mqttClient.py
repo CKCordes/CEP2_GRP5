@@ -40,8 +40,8 @@ class Zigbee2mqttMessage:
     """
 
     topic: str
-    deviceID: str
     type_: Zigbee2mqttMessageType
+    deviceID: str = None
     data: Any = None
     event: Any = None
     message: Any = None
@@ -73,8 +73,8 @@ class Zigbee2mqttMessage:
                        "zigbee2mqtt/bridge/response/health_check"]:
             instance = None
         else:
-            instance = cls(type_=Zigbee2mqttMessageType.DEVICE_EVENT,
-                           topic=topic,
+            instance = cls(topic=topic,
+                           type_=Zigbee2mqttMessageType.DEVICE_EVENT,        
                            data=json.loads(message))
 
         return instance
@@ -134,6 +134,7 @@ class Zigbee2mqttClient:
         # Subscribe to all topics given in the initializer.
         for t in self.__topics:
             self.__client.subscribe(t)
+            self.__client.subscribe(t+"/#")
         # Start the subscriber thread.
         self.__subscriber_thread.start()
 

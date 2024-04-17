@@ -4,7 +4,7 @@ from typing import Any
 import requests
 
 DATABASE_HTTP_HOST = "http://localhost:8000"
-
+        
 class WebClient:
     """ Represents a local web client that sends events to a remote web service.
     """

@@ -15,11 +15,9 @@ if __name__ == "__main__":
     room_tracker = RoomTracker("Room_Tracker", room_motion_sensors)
     
     # Stove tracker
-    stove_actuator = ZigbeeDevice("test_Stove_Actuator", "power_plug", "kitchen")
+    stove_actuator = ZigbeeDevice("test_stove_actuator", "power_plug", "kitchen")
     stove_power_model = DevicesModel(stove_actuator)
     stove_tracker = KitchenStoveTracker("Stove_Tracker", stove_power_model) 
-    
-    
     
     # Kitchen guard operator
     lights = LEDstrip("test_lights", "led", "livingroom")

@@ -17,8 +17,8 @@ class KitchenGuardOperator(Operator):
         self.last_time_in_kitchen = None
         self.alarming = False
         
-        self.ALARM_TIME = 60 * 1
-        self.TURN_OFF_TIME = 60 * 2
+        self.ALARM_TIME = 60 * 0.5
+        self.TURN_OFF_TIME = 60 * 1
 
         self.__room_tracker_name = self.trackers[0]
         self.__stove_tracker_name = self.trackers[1] 
@@ -47,8 +47,6 @@ class KitchenGuardOperator(Operator):
             
         if tracker_name == self.__room_tracker_name:
             kitchen_occupancy = message["occupancy"]["kitchen"]
-                
-               
                                
             if kitchen_occupancy is None:
                 self.log(f"Mistake in room tracker data or parse message incorrectly")
@@ -59,37 +57,41 @@ class KitchenGuardOperator(Operator):
                 self.resident_in_kitchen = True
             else:
                 self.resident_in_kitchen = False
-            
-            pass
                 
     def operate(self):
+        
+        if self.last_time_in_kitchen is None:
+            return
         
         if not self.stove_active:
             return
         
-        if (self.last_time_in_kitchen + self.ALARM_TIME) > time():
+        if self.stove_active and (time() - self.last_time_in_kitchen) > self.ALARM_TIME:
+            self.log("Turning on alarm")
             self.alarming = True
-            self.__alarm_resident("ON")
+            self.alarm_resident("ON")
         
         
-        if self.alarming and (self.last_time_in_kitchen + self.TURN_OFF_TIME) > time():
-            self.__turn_off_stove()
+        if self.alarming and (time() - self.last_time_in_kitchen) > self.TURN_OFF_TIME:
+            self.log("Turning off stove")
+            self.turn_off_stove()
             
         if self.alarming and self.resident_in_kitchen:
+            self.log("Turning off alarm")
             self.alarming = False
-            self.__alarm_resident("OFF")
+            self.alarm_resident("OFF")
              
         
-    def __alarm_resident(self, state):
+    def alarm_resident(self, state):
         stove_plug_device = self.actuator_devices.get_type("led")[0]
         
-        self.__z2m_client.change_state(stove_plug_device.id_, state)
+        self.z2m_client.change_state(stove_plug_device.id_, state)
         
 
-    def __turn_off_stove(self):
+    def turn_off_stove(self):
         
         stove_plug_device = self.actuator_devices.get_type("power_plug")[0]
         
-        self.__z2m_client.change_state(stove_plug_device.id_,"OFF")
+        self.z2m_client.change_state(stove_plug_device.id_,"OFF")
         
        

@@ -23,7 +23,7 @@ class Operator(ABC):
                                               serving         = self.name)
         
         # entirely for actuators
-        self.__z2m_client = Zigbee2mqttClient(on_message_clbk = None,
+        self.z2m_client = Zigbee2mqttClient(on_message_clbk = None,
                                               topics          = [],
                                               serving         = self.name)
                                               
@@ -46,12 +46,12 @@ class Operator(ABC):
         print(f"[{now}] {self.name} : {string}"  )
     
     def start(self) -> None:
-        self.__z2m_client.connect()
+        self.z2m_client.connect()
         
-        z2m_health = self.__z2m_client.check_health()
+        z2m_health = self.z2m_client.check_health()
         if z2m_health != "ok":
             self.log("Zigbee2MqttClient - health check BAD")
-            ##self.__z2m_client.disconnect() # giver fejl som kommer helt inde i koden.
+            ##self.z2m_client.disconnect() # giver fejl som kommer helt inde i koden.
             return
             
         self.log(f"Zigbee2MqttClient is OK - Operationg ready")
@@ -63,7 +63,7 @@ class Operator(ABC):
         
     
     def stop(self) -> None:
-        self.__z2m_client.disconnect()
+        self.z2m_client.disconnect()
         self.__stop_operating_thread.set()
     
     @abstractmethod
