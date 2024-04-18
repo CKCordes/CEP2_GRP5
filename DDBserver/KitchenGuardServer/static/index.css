@@ -1,6 +1,10 @@
 header {
-    color: green;
+    margin: auto;
+    padding: 10px;
+    width: 50%;
+    text-align: center;
+    color: #363737;
 }
 body {
-    background-color: #F5F5DC;
+    background-color: #fefef0;
 }

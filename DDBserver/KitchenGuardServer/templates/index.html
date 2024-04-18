@@ -12,18 +12,65 @@
         <h1>My Simple HTML Page</h1>
     </header>
 
-    <!-- Buttons within the same div -->
+    <script>
+        window.onload = function() {
+            getFromDatabase('allEvents');
+        };
+    </script>
+
     <div>
-        <button>Button 1</button>
-        <button>Button 2</button>
-        <button>Button 3</button>
+        <button onclick="getFromDatabase('allEvents')">All events</button>
+        <button onclick="getFromDatabase('someEvents')">Some other events</button>
+        <button onclick="getFromDatabase('allEvents')">Some other other events</button>
     </div>
 
-    <!-- List -->
-    <ul>
-        <li>Item 1</li>
-        <li>Item 2</li>
-        <li>Item 3</li>
-    </ul>
+    <div>
+        <table id="dataTable">
+        </table>
+    </div>
+
+    <!-- Buttons within the same div -->
+        <script>
+            function getFromDatabase(databaseURL) {
+                fetch(`/${databaseURL}`)
+                    .then(response => response.json())
+                    .then(data => {
+
+                        // gets keys from data, it will be used as table headers
+                        keys = Object.keys(data.data[0]);
+                        const tableHeaders = document.createElement('tr');
+
+                        // Creates tableheaders based on keys
+                        keys.forEach(key => {
+                            const th = document.createElement('th');
+                            th.textContent = key;
+                            tableHeaders.appendChild(th);                
+                        })
+
+                        // Clear existing table rows and updates headerrow
+                        const tableBody = document.getElementById("dataTable");
+                        tableBody.innerHTML = '';
+                        tableBody.appendChild(tableHeaders);
+                    
+                        // Populate table rows with data
+                        // Iterates through all entries in data.
+                        data.data.forEach(item => {
+                            const row = document.createElement('tr');
+                            // Iterates through all columns in item ("event_id", "patient", and so on)
+                            for (const [key, value] of Object.entries(item)){
+                                const td = document.createElement('td');
+                                td.innerText = value;
+                                // appends tabledata to row
+                                row.appendChild(td);
+                            }
+                            // appends row to table
+                            tableBody.appendChild(row);
+                        });
+                    })
+                    // Error handling
+                    .catch(error => console.log("Error", error));
+                
+            }
+        </script>
 </body>
 </html>
