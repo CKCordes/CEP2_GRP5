@@ -14,26 +14,49 @@ def updatedb(data):
     if Event.objects.filter(event_id=data["event_id"]).exists():
         return
     
-    ## Indsat af Mads:
-    newEvent = Event()
+    # Checks if patient already exists    
+    if Patient.objects.filter(patient_id=data["patient_id"]).exists():
+        patient = Patient.objects.get(patient_id=data["patient_id"]) # Creates an instance of a patient matching the given id. 
+    else:
+        # Creates a new instance of the patient
+        patient = Patient(patient_id = data["patient_id"], 
+                          caregiver_id = data["caregiver_id"],
+                          monitor_id = data["monitor_id"],
+                          location = data["location"],
+                          street_address = data["street_address"],
+                          city = data["city"],
+                          postal_code = data["postal_code"],
+                          site = data["site"])
+        patient.save()
     
-    patient = Patient.objects.get(patient_id='Chris') # Creates an instance of a patient matching the given id. 
-    sensor = Sensor.objects.get(sensor_id='pikogpatter87') # Creates an instance of the sensor matching the id
-    
-    newEvent.event_id = data["event_id"]
-    newEvent.sensor = sensor 
-    newEvent.patient = patient 
-    newEvent.event_type = data["event_type"]
-    newEvent.event_type_enum = data["event_type_enum"]
-    newEvent.description = data["description"]
-    newEvent.advanced = data["advanced"]
-    newEvent.timestamp = data["timestamp"]
-    newEvent.start_time = data["start_time"]
-    newEvent.end_time = data["end_time"]
-    newEvent.length = data["length"]
-    newEvent.value = data["value"]
-    newEvent.unit = data["unit"]
-    
+    # Checks if sensor already exists
+    if Sensor.objects.filter(sensor_id=data["sensor_id"]):
+        sensor = Sensor.objects.get(sensor_id=data["sensor_id"]) # Creates an instance of the sensor matching the id
+    else:
+        # The sensor is new and a new instance of the sensor is registered.
+        sensor = Sensor(sensor_id = data["sensor_id"],
+                        sensor_type = data["sensor_type"],
+                        sensor_location = data["sensor_location"],
+                        device_model = data["device_model"],
+                        device_vendor = data["device_vendor"],
+                        accuracy = data["accuracy"],
+                        sensor_blind_duration = data["sensor_blind_duration"])
+        sensor.save()
+        
+    # Creates the new event and logs it
+    newEvent = Event(event_id = data["event_id"],
+                     sensor = sensor,
+                     patient = patient,
+                     event_type = data["event_type"],
+                     event_type_enum = data["event_type_enum"],
+                     description = data["description"],
+                     advanced = data["advanced"],
+                     timestamp = data["timestamp"],
+                     start_time = data["start_time"],
+                     end_time = data["end_time"],
+                     length = data["length"],
+                     value = data["value"],
+                     unit = data["unit"])
     newEvent.save()
     
     ##

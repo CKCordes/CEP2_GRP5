@@ -6,7 +6,7 @@ urlpatterns = [
     path("", views.login, name="login"),
     path("index", views.index, name="index"),
     path("KitchGuardServer", views.index, name="index"),
-    path("dbupdater", views.dbupdater, name="dbupdater"),
-    path("allEvents", views.allEvents, name="allEvents"),
-    path("someEvents", views.someEvents, name="someEvents"),
+    path("api/dbupdater", views.dbupdater, name="dbupdater"),
+    path("api/allEvents", views.allEvents, name="allEvents"),
+    path("api/someEvents", views.someEvents, name="someEvents"),
 ]
