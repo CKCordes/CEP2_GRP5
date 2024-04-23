@@ -8,7 +8,8 @@ def updatedb(data):
     try:
        connection = sqlite3.connect("../../db.sqlite3")
     except:
-        print("Error")
+        print("Error conencting to the database")
+        return
         
     # Checks for an event already existing
     if Event.objects.filter(event_id=data["event_id"]).exists():
@@ -16,7 +17,7 @@ def updatedb(data):
     
     ## Indsat af Mads:
     newEvent = Event()
-    
+     
     patient = Patient.objects.get(patient_id='Chris') # Creates an instance of a patient matching the given id. 
     sensor = Sensor.objects.get(sensor_id='pikogpatter87') # Creates an instance of the sensor matching the id
     

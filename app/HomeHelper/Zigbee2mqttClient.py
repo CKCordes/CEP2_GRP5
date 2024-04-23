@@ -127,7 +127,7 @@ class Zigbee2mqttClient:
         if self.__connected:
             return
 
-        # Connect to the host given in initializer.
+        # Connect to th3e host given in initializer.
         self.__client.connect(self.__mqtt_host,
                               self.__mqtt_port)
         self.__client.loop_start()

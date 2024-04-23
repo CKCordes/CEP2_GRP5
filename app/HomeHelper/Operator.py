@@ -66,12 +66,18 @@ class Operator(ABC):
         self.z2m_client.disconnect()
         self.__stop_operating_thread.set()
     
+
+    
     @abstractmethod
-    def parse_message(self, tracker_name: str, message: str):
+    def parse_message(self, tracker_name: str, json_message: str):
         pass
     
     @abstractmethod
     def initialize(self):
+        pass
+    
+    @abstractmethod
+    def disable(self):
         pass
     
     @abstractmethod

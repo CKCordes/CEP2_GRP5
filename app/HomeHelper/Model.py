@@ -13,12 +13,12 @@ class LEDstrip(ZigbeeDevice):
 
     
 class DevicesModel:
-    def __init__(self, device: Union[ZigbeeDevice, List[ZigbeeDevice]] = []):
+    def __init__(self, devices: Union[ZigbeeDevice, List[ZigbeeDevice]] = []):
         # key is device_id(friendly_name thing), value is a ZigbeeDevice
         self.__devices: dict[str, ZigbeeDevice] = {}
         
-        if device != []:
-            self.add_devices(device)
+        if devices != []:
+            self.add_devices(devices)
         
 
     @property

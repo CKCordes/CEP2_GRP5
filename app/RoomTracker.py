@@ -13,16 +13,16 @@ class RoomTracker(Tracker):
     def initialize(self):
         self.log("Initializing RoomTracker")
 
-        self.__RoomsOccupancy = {}
+        self.__rooms_occupancy = {}
         
         deviceslist = self.devices_model.devices_list
         for device in deviceslist:
-            self.__RoomsOccupancy[device.location] = False
+            self.__rooms_occupancy[device.location] = False
 
     def parse_event(self, message: Zigbee2mqttMessage):
         device = self.devices_model.find(message.deviceID)
         
-        self.__RoomsOccupancy[device.location] = message.data["occupancy"]
+        self.__rooms_occupancy[device.location] = message.data["occupancy"]
 
     def tracking_message(self) -> str:
-        return json.dumps({"occupancy": self.__RoomsOccupancy})
+        return json.dumps({"occupancy": self.__rooms_occupancy})

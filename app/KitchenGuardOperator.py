@@ -12,7 +12,6 @@ class KitchenGuardOperator(Operator):
     def initialize(self):
         self.log("Initializing KitchenGuardOperator")
         self.stove_active = False
-        self.stove_time_turned_on = None
         self.resident_in_kitchen = False
         self.last_time_in_kitchen = None
         self.alarming = False
@@ -24,15 +23,15 @@ class KitchenGuardOperator(Operator):
         self.__stove_tracker_name = self.trackers[1] 
     
     def disable(self):
-        self.__alarm_resident("OFF")
+        self.alarm_resident("OFF")
         
     # message: JSON
-    def parse_message(self, tracker_name: str, message: any):
+    def parse_message(self, tracker_name: str, json_message: any):
         if tracker_name == self.__stove_tracker_name:
             
-            new_stove_state = message["StoveState"]
+            new_stove_state = json_message["StoveState"]
             
-            if message["StoveState"] is None:
+            if json_message["StoveState"] is None:
                 self.log("Mistake in stove tracker data")
                 return
             
@@ -46,7 +45,7 @@ class KitchenGuardOperator(Operator):
                 
             
         if tracker_name == self.__room_tracker_name:
-            kitchen_occupancy = message["occupancy"]["kitchen"]
+            kitchen_occupancy = json_message["occupancy"]["kitchen"]
                                
             if kitchen_occupancy is None:
                 self.log(f"Mistake in room tracker data or parse message incorrectly")

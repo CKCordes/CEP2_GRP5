@@ -225,7 +225,6 @@ class HeucodEvent:
     # Is this a direct event? This mean there is no gateway involved.
     direct_event: bool = None
     sending_delay: int = None
-    advanced: str = None
     # -------------------- Patient details --------------------
     # ID of the user or patient to whom this event belongs.
     patient_id: str = None
