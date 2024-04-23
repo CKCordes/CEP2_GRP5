@@ -11,6 +11,11 @@ class ZigbeeDevice:
 class LEDstrip(ZigbeeDevice):
     pass
 
+@dataclass
+class Patient:
+    patient_id: str
+
+    
     
 class DevicesModel:
     def __init__(self, devices: Union[ZigbeeDevice, List[ZigbeeDevice]] = []):

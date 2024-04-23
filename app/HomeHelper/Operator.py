@@ -34,11 +34,11 @@ class Operator(ABC):
     def __message_received(self, trackername: str, message: str) -> None:
         
         if trackername in self.trackers:
-            self.log(f"message received: [{trackername}] {message} ")
+            #self.log(f"message received: [{trackername}] {message} ")
             json_message = json.loads(message)
             self.parse_message(trackername, json_message)
         else:
-            self.log(f"event from unknown tracker : [{trackername}] {message} ")
+            # self.log(f"event from unknown tracker : [{trackername}] {message} ")
             pass
         
     def log(self, string: str):

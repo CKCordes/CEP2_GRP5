@@ -134,7 +134,8 @@ class Zigbee2mqttClient:
         # Subscribe to all topics given in the initializer.
         for t in self.__topics:
             self.__client.subscribe(t)
-            self.__client.subscribe(t+"/#")
+            if t[-1] != '#':
+                self.__client.subscribe(t+"/#")
         # Start the subscriber thread.
         self.__subscriber_thread.start()
 

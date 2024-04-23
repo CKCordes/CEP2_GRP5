@@ -49,11 +49,11 @@ class Tracker(ABC):
         # If the message is not a device event, then don't do anything.
 
         if device:
-            self.log(f"event received: [{message.topic}] {message.data} ")
+            #self.log(f"event received: [{message.topic}] {message.data} ")
   
             self.parse_event(message)
         else:
-            self.log(f"event from unknown device : [{message.topic}] {message.data} ")
+            #self.log(f"event from unknown device : [{message.topic}] {message.data} ")
             pass
     
     def log(self, string: str):

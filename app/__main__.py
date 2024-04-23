@@ -1,5 +1,5 @@
-from .HomeHelper import *
-from .HomeHelper.Model import DevicesModel, ZigbeeDevice, LEDstrip
+from .HomeHelper.Model import DevicesModel, ZigbeeDevice, LEDstrip, Patient
+from .HomeHelper.WebClient import WebClient
 from .KitchenStoveTracker import KitchenStoveTracker
 from .RoomTracker import RoomTracker
 from .KitchenGuardOperator import KitchenGuardOperator
@@ -8,6 +8,9 @@ from time import sleep
 import json
 
 if __name__ == "__main__":
+    
+    patient = Patient("test_patient")
+    
     # Room tracker
     room_motion_sensors = DevicesModel([ZigbeeDevice("test_kitchen", "pir", "kitchen"),
                                         ZigbeeDevice("test_room", "pir", "livingroom"),
@@ -28,10 +31,16 @@ if __name__ == "__main__":
                                                    kitchenguard_devices, 
                                                    [room_tracker.name, stove_tracker.name])
     
+    # Database client
+    
+    web_client = WebClient(patient)
+    
+    
     # Start the program
     room_tracker.start()
     stove_tracker.start()
     kitchen_guard_operator.start()
+    web_client.start()
     
 
     while True:
