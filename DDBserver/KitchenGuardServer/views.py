@@ -36,7 +36,6 @@ def dbupdater(request):
     try:
         heucod_json = request.read()
         data = json.loads(heucod_json)
-        print(data)
         updatedb(data)
         return HttpResponse("POST success")
     except:    

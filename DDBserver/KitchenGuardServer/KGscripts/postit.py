@@ -1,35 +1,71 @@
 import requests
-import json
+import time
+from heucod import HeucodEvent
+import uuid
 
 # URL to post the JSON data
-url = "http://127.0.0.1:8000/KitchenGuardServer/dbupdater"
+url = "http://127.0.0.1:8000/api/dbupdater"
 
-# Sample JSON data
-data = {
-    'event_id': 'EV12345679',
-    'sensor': 1, 
-    'patient': 1, 
-    'event_type': 'Heart Rate',
-    'event_type_enum': 1,
-    'description': 'Patients heart rate is above normal range.',
-    'advanced': 'Advanced monitoring required.',
-    'timestamp': 1,
-    'start_time': 1,
-    'end_time': 1,
-    'length': 10, # Length in minutes
-    'value': '100',
-    'unit': 'bpm',
-}
 
-# Convert data to JSON string
-json_data = json.dumps(data)
+# Creating Heucod event
+heucod = HeucodEvent()
+# == Event ==
+heucod.id_ = uuid.uuid4()
+heucod.event_type = "BasicEvent"
+heucod.event_type_enum = 81325
+heucod.description = "some data"
+heucod.advanced = ""
+heucod.timestamp = time.time()
+heucod.start_time = -1
+heucod.end_time = -1
+heucod.length = -1
+heucod.sensor_blind_duration = -1
+heucod.value = -1
+heucod.unit = ""
+heucod.value2 = -1
+heucod.unit2 = ""
+heucod.value3 = -1
+heucod.unit3 = ""
+heucod.direct_event = False
+heucod.sending_delay = -1
+
+# == Patient ==
+heucod.patient_id = "test_patient"
+heucod.caregiver_id = 1
+heucod.monitor_id = 1
+heucod.location = ""
+heucod.street_adress = "hej"
+heucod.city = "Aarhus"
+heucod.postal_code = 8200
+heucod.site = ""
+heucod.room = "" 
+
+# == Sensor ==
+heucod.sensor_id = "lille_sensor"
+heucod.sensor_type = ""
+heucod.sensor_location = ""
+heucod.sensor_rtc_clock = True
+heucod.device_model = ""
+heucod.device_vendor = ""
+heucod.gateway_id = ""
+heucod.service_id = ""
+heucod.power = 100
+heucod.battery = 100
+heucod.rssi = 1.0
+heucod.measured_power = 1.0
+heucod.signal_to_noise_ratio = 0.5
+heucod.accuracy = 1
+heucod.link_quality = 255
+
+# Converting to json
+heucod_json = heucod.to_json()
 
 # Set the headers
 headers = {'Content-Type': 'application/json'}
 
 try:
     # Send POST request with JSON data
-    response = requests.post(url, data=json_data, headers=headers)
+    response = requests.post(url, data=heucod_json, headers=headers)
 
     # Check if request was successful (status code 200)
     if response.status_code == 200:
