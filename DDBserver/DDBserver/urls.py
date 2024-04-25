@@ -18,8 +18,7 @@ from django.contrib import admin
 from django.urls import path, include
 
 urlpatterns = [
-    path("login/", include("KitchenGuardServer.urls")),
-    path("KitchenGuardServer/", include("KitchenGuardServer.urls")),
-    path("", include("KitchenGuardServer.urls")),
+    path("", include("Frontend.urls")),
+    path("api/", include("KitchenGuardServer.urls")),
     path('admin/', admin.site.urls),
 ]
