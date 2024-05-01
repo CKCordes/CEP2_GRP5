@@ -2,75 +2,156 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../static/index.css">
+    <link type="text/css" src = "../static/index.css">
+    <script type="text/js" src = "../static/scripts.js"></script>
+    <style>
+        .data-representation {
+            display: none;
+        }
+        .active {
+            display: block;
+        }
+    </style>
+
+    
+    <!-- Include DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.0.5/css/dataTables.dataTables.min.css">
+    
+    <!-- Include jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <!-- Include DataTables JS -->
+    <script src="https://cdn.datatables.net/2.0.5/js/dataTables.min.js"></script>
+    
     <title>KitchenGuard</title>
 </head>
 <body>
     <!-- Header -->
     <header>
-        <h1>My Simple HTML Page</h1>
+        <h1>Homehelper 9000</h1>
     </header>
 
+    <!-- This is some django to html language. It looks weird but gets the job done-->
+    <select id="patientSelect" onchange="handlePatientChange()"><option value="">Select a patient</option>
+        {% for patient in patients %}
+            <option value="{{ patient.patient_id }}">{{ patient.patient_id }}</option>
+        {% endfor %}</select>
+
+    <button id="toggleButton">View data as graphs</button>
+
+    
+
+    <div id="eventButtons">
+        <button id = "allEvents" >All events</button>
+        <button id = "cookingEvents">Cooking events</button>
+        <button id = "awayTime">Away time</button>
+    </div>
+
+    <h3 id="dataHeader"></h3>
+
+
+    <table id="dataTable" class = "data-representation active"></table>
+
     <script>
-        window.onload = function() {
-            getFromDatabase('allEvents');
-        };
-    </script>
 
-    <div>
-        <button onclick="getFromDatabase('api/allEvents')">All events</button>
-        <button onclick="getFromDatabase('api/someEvents')">Some other events</button>
-        <button onclick="getFromDatabase('api/allEvents')">Some other other events</button>
-    </div>
+        // Toggle button action. Is will work in progress.
+        document.getElementById('toggleButton').addEventListener('click', function() {
+            // Toggle the visibility of the data representations
 
-    <div>
-        <table id="dataTable">
-        </table>
-    </div>
+            $("#dataTable").toggle()
+            document.getElementById('dataTable2').classList.toggle('acti2ve');
+            document.getElementById('representation2').classList.toggle('active');
+        });
 
-    <!-- Buttons within the same div -->
-        <script>
-            function getFromDatabase(databaseURL) {
-                fetch(`/${databaseURL}`)
+        // Sets eventlisteners on all buttons
+        setEventListernesOnButton("allEvents", function () {getFromDatabase('api/allEvents')});
+        setEventListernesOnButton("cookingEvents", function() {getFromDatabase('api/cookingEvents')});
+        setEventListernesOnButton("awayTime", function () {getFromDatabase('api/awayTime')});
+        
+        function setEventListernesOnButton(buttonId, func){
+            var button = document.getElementById(buttonId);
+            button.addEventListener("click", func);
+        }
+        
+        // Handles when a new patient is chosen in the dropdown
+        function handlePatientChange(){
+            var allEventsButton = document.getElementById("allEvents");
+            allEventsButton.click()
+        }
+
+        // Converts the fetched data into an array of array. This is helpfull for DataTable. 
+        function fetchToArray(data){
+            arr = [];
+            data.data.forEach(item => {
+                    var row = [];
+                    for (const [key, value] of Object.entries(item)){
+                        row.push(value.toString());
+                    }
+                    arr.push(row);
+                })
+            return arr;
+        }
+
+        // Converts fetched data into headers for the table. 
+        function keysToHeaders(data){
+            
+            arr = [];
+
+            keys = Object.keys(data.data[0]);
+
+            keys.forEach(key =>{
+                arr.push({title: key.toString()})
+            })
+
+            return arr;
+        }
+
+        // Fetches data from the database. 
+        function getFromDatabase(databaseURL) {
+            $("#dataTable").show(); // This makes sure you can't change data with table hidden. 
+
+            var selectedPatientId = document.getElementById('patientSelect').value;
+
+            if (selectedPatientId){
+                var fullUrl = databaseURL + '?patient_id=' + selectedPatientId;
+                fetch(`/${fullUrl}`)
                     .then(response => response.json())
                     .then(data => {
 
-                        // gets keys from data, it will be used as table headers
-                        keys = Object.keys(data.data[0]);
-                        const tableHeaders = document.createElement('tr');
+                        // Clears table
+                        $('#dataTable').DataTable().destroy();
 
-                        // Creates tableheaders based on keys
-                        keys.forEach(key => {
-                            const th = document.createElement('th');
-                            th.textContent = key;
-                            tableHeaders.appendChild(th);                
+                        // Extract headers from the data. Will be used as table headers
+                        var keyHeaders = keysToHeaders(data);
+                        // Organizing data into array of arrays. 
+                        var eventData = fetchToArray(data);
+
+                        // Not entirely sure what this does, but overall it sets up the data for DataTable to read below. 
+                        // For reference: https://datatables.net/examples/data_sources/js_array
+                        eventData.forEach(r => {
+                            var div1 = document.createElement('div');
+                            div1.innerHTML = r[1];
+                            r[1] = div1;
+
+                            var div3 = document.createElement('div');
+                            div3.innerHTML = r[3];
+                            r[3] = div3;
                         })
 
-                        // Clear existing table rows and updates headerrow
-                        const tableBody = document.getElementById("dataTable");
-                        tableBody.innerHTML = '';
-                        tableBody.appendChild(tableHeaders);
-                    
-                        // Populate table rows with data
-                        // Iterates through all entries in data.
-                        data.data.forEach(item => {
-                            const row = document.createElement('tr');
-                            // Iterates through all columns in item ("event_id", "patient", and so on)
-                            for (const [key, value] of Object.entries(item)){
-                                const td = document.createElement('td');
-                                td.innerText = value;
-                                // appends tabledata to row
-                                row.appendChild(td);
-                            }
-                            // appends row to table
-                            tableBody.appendChild(row);
+                        // Creates a datatable in our table called dataTable. 
+                        new DataTable('#dataTable', {
+                        columns: keyHeaders,
+                        data: eventData
                         });
                     })
+
                     // Error handling
                     .catch(error => console.log("Error", error));
-                
-            }
-        </script>
+            } else {
+                alert("Please select a patient");
+            }   
+        }
+    </script>
+
 </body>
 </html>

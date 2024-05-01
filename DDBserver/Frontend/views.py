@@ -1,15 +1,12 @@
-from django.shortcuts import render
-from django.http import HttpResponse, JsonResponse
-import json
-from django.views.decorators.csrf import csrf_exempt
-
-
 from django.shortcuts import render, redirect
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import authenticate, login as auth_login
+from KitchenGuardServer.models import Patient
 
 def index(request):
-    return render(request, "index.html")
+    patients = Patient.objects.all()
+        
+    return render(request, "index.html", {'patients': patients})
 
 def login(request):
     if request.method == 'POST':
