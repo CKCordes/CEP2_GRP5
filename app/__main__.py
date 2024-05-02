@@ -9,21 +9,20 @@ import json
 
 if __name__ == "__main__":
     
-    patient = Patient("test_patient")
+    patient = Patient("Test_simulation_patient")
     
     # Room tracker
-    room_motion_sensors = DevicesModel([ZigbeeDevice("test_kitchen", "pir", "kitchen"),
-                                        ZigbeeDevice("test_room", "pir", "livingroom"),
-                                        ZigbeeDevice("test_bath", "pir", "bathroom"),])
+    room_motion_sensors = DevicesModel([ZigbeeDevice("lille_sensor", "pir", "kitchen"),
+                                        ZigbeeDevice("stor_sensor", "pir", "livingroom"),])
     room_tracker = RoomTracker("Room_Tracker", room_motion_sensors)
     
     # Stove tracker
-    stove_actuator = ZigbeeDevice("test_stove_actuator", "power_plug", "kitchen")
+    stove_actuator = ZigbeeDevice("smart_plug", "power_plug", "kitchen")
     stove_power_model = DevicesModel(stove_actuator)
     stove_tracker = KitchenStoveTracker("Stove_Tracker", stove_power_model) 
     
     # Kitchen guard operator
-    lights = LEDstrip("test_lights", "led", "livingroom")
+    lights = LEDstrip("led_strip", "led", "livingroom")
     kitchenguard_devices = stove_power_model
     kitchenguard_devices.add_devices(lights)
     
@@ -32,8 +31,11 @@ if __name__ == "__main__":
                                                    [room_tracker.name, stove_tracker.name])
     
     # Database client
-    
-    web_client = WebClient(patient)
+    all_devices = DevicesModel([ZigbeeDevice("lille_sensor", "pir", "kitchen"),
+                                ZigbeeDevice("stor_sensor", "pir", "livingroom"),
+                                ZigbeeDevice("smart_plug", "power_plug", "kitchen"),
+                                LEDstrip("led_strip", "led", "livingroom")])
+    web_client = WebClient(patient, all_devices)
     web_client.start()
     
     

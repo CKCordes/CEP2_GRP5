@@ -32,8 +32,13 @@ if __name__ == "__main__":
                                                    [room_tracker.name, stove_tracker.name])
     
     # Database client
+    all_devices = DevicesModel([ZigbeeDevice("test_kitchen", "pir", "kitchen"),
+                                ZigbeeDevice("test_room", "pir", "livingroom"),
+                                ZigbeeDevice("test_bath", "pir", "livingroom"),
+                                ZigbeeDevice("test_stove_actuator", "power_plug", "kitchen"),
+                                LEDstrip("test_lights", "led", "livingroom")])
     
-    web_client = WebClient(patient)
+    web_client = WebClient(patient, all_devices)
     web_client.start()
     
     

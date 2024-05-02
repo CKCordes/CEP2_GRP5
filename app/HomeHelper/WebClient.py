@@ -13,9 +13,11 @@ DATABASE_HTTP_HOST = "http://localhost:8000/api/dbupdater"
 class WebClient:
     def __init__(self, 
                  paitent: Patient,
+                 devices: DevicesModel,
                  database_host: str = DATABASE_HTTP_HOST) -> None:
         self.name = "WebClient"
         self.__patient = paitent
+        self.__devices = devices
         self.__host = database_host
         self.__z2m_client = Zigbee2mqttClient(on_message_clbk = self.__event_received,
                                               serving         = "WebClient")
@@ -51,13 +53,29 @@ class WebClient:
         
         heucod = HeucodEvent()
         
+        # Figure out eventtype
         
+        device = self.__devices.find(device_id)
         
+        if device is None:
+            self.log(f"Device{device_id} not found in webclient")
+            return
+        
+        event_type_ = "BasicEvent"
+        event_type_enum_ = 81325
+        
+        if device.type_ == "pir":
+            event_type_ = "RoomMovementEvent"
+            event_type_enum_ = 82099
+            
+        elif device.type_ == "power_plug":
+            event_type_ = "CookingDeviceUsage"
+            event_type_enum_ = 82136
         
         # == Event ==
         heucod.id_ = uuid.uuid4()
-        heucod.event_type = "BasicEvent"
-        heucod.event_type_enum = 81325
+        heucod.event_type = event_type_
+        heucod.event_type_enum = event_type_enum_
         heucod.description = message.data
         heucod.advanced = ""
         heucod.timestamp = time.time()
@@ -87,8 +105,8 @@ class WebClient:
         
         # == Sensor ==
         heucod.sensor_id = device_id
-        heucod.sensor_type = ""
-        heucod.sensor_location = ""
+        heucod.sensor_type = device.type_
+        heucod.sensor_location = device.location
         heucod.sensor_rtc_clock = True
         heucod.device_model = ""
         heucod.device_vendor = ""

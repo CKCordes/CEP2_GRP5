@@ -7,24 +7,30 @@ class KitchenStoveTracker(Tracker):
     """
     Requires ONE power plug actuator of the stove 
     
-    Tracking message format: {"StoveState" : "ON" | "OFF"}
+    Tracking message format: {"StoveUse" : "ON" | "OFF"}
     """    
     
     def initialize(self):
         self.log(f"Initializeing kicken tracker")
         
-        self.__stove_power = "OFF"
+        self.__stove_usage = "OFF"
         
     def parse_event(self, message: Zigbee2mqttMessage):
+        power = 0
+        try:
+            power = message.data["power"]
+        except:
+            self.log("no power in message ")
+            return
+            
+        if power < 4:
+            self.__stove_usage = "OFF"
+        else:
+            self.__stove_usage = "ON"
         
-        self.__stove_power = message.data["state"]
         
     def tracking_message(self) -> str:
-        return json.dumps({"StoveState": self.__stove_power})
-        
-        
-        
-        
+        return json.dumps({"StoveUse": self.__stove_usage})
         
         
         
