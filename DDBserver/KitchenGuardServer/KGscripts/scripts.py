@@ -1,19 +1,23 @@
 from ..models import Event, Sensor, Patient
 import datetime
+import json
 
 def getCookingEvents(cookingEvents):
     cooking = False
     curr_event = Event()
     events = []
+    
     for event in cookingEvents:
+        desc = json.loads(event.description)
+        
         # If resident isn't cooking but have turned the stove on
-        if not cooking and event.description == "{state:ON}":
+        if not cooking and desc["state"] == "ON":
             cooking = True
             curr_event = event
             continue
         
         # If resident IS cooking and stove is turned off. 
-        if cooking and event.description == "{state:OFF}":
+        if cooking and desc["state"] == "OFF":
             cooking = False
             curr_event.end_time = event.start_time
             curr_event.length = curr_event.end_time - curr_event.start_time
@@ -30,12 +34,17 @@ def getTrackingEvents(trackingEvents):
     events = []
     
     for event in trackingEvents:
-        if not rooms.get(event.sensor.sensor_location) and event.description == "{Occupied:True}":
+        print(event.description)
+        desc = json.loads(event.description)
+        print(desc["occupancy"])
+        
+        
+        if not rooms.get(event.sensor.sensor_location) and desc["occupancy"]:
             rooms[event.sensor.sensor_location] = True           
             curr_events[event.sensor.sensor_location] = event
             continue
         
-        if rooms.get(event.sensor.sensor_location) and event.description == "{Occupied:False}":
+        if rooms.get(event.sensor.sensor_location) and not desc["occupancy"]:
             rooms[event.sensor.sensor_location] = False
             if event.sensor.sensor_location in curr_events:
                 curr_event = curr_events[event.sensor.sensor_location]

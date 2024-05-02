@@ -32,7 +32,7 @@ def heucodCreater(_enum, _desc, _location):
     heucod.sending_delay = -1
 
     # == Patient ==
-    heucod.patient_id = "other_test_patient"
+    heucod.patient_id = "test_patient"
     heucod.caregiver_id = 1
     heucod.monitor_id = 1
     heucod.location = ""
@@ -78,28 +78,28 @@ def heucodCreater(_enum, _desc, _location):
     except Exception as e:
         print("An error occurred:", str(e))
         
-for i in range(5):
-    heucodCreater(82136, "{state:ON}", "kitchen")
-    heucodCreater(82136, "{state:ON}", "kitchen")
+for i in range(1):
+    heucodCreater(82136, '{"state":"ON"}', "kitchen")
+    heucodCreater(82136, '{"state":"ON"}', "kitchen")
     time.sleep(2)
-    heucodCreater(82099, "{Occupied:True}", "living room")
+    heucodCreater(82099, '{"occupancy":true}', "living room")
     time.sleep(2)
-    heucodCreater(82099, "{Occupied:True}", "living room")
-    heucodCreater(82099, "{Occupied:True}", "living room")
-    heucodCreater(82136, "{state:ON}", "kitchen")
+    heucodCreater(82099, '{"occupancy":true}', "living room")
+    heucodCreater(82099, '{"occupancy":true}', "living room")
+    heucodCreater(82136, '{"state":"ON"}', "kitchen")
     time.sleep(2)
-    heucodCreater(82136, "{state:ON}", "kitchen")
+    heucodCreater(82136, '{"state":"ON"}', "kitchen")
     time.sleep(2)
-    heucodCreater(82099, "{Occupied:True}", "living room2")
-    heucodCreater(82099, "{Occupied:False}", "living room")
-    heucodCreater(82099, "{Occupied:True}", "living room2")
+    heucodCreater(82099, '{"occupancy":true}', "living room2")
+    heucodCreater(82099, '{"occupancy":false}', "living room")
+    heucodCreater(82099, '{"occupancy":true}', "living room2")
     time.sleep(4)
-    heucodCreater(82099, "{Occupied:False}", "living room2")
-    heucodCreater(82136, "{state:ON}", "kitchen")
-    heucodCreater(82136, "{state:OFF}", "kitchen")
-    heucodCreater(82136, "{state:ON}", "kitchen")
+    heucodCreater(82099, '{"occupancy":false}', "living room2")
+    heucodCreater(82136, '{"state":"ON"}', "kitchen")
+    heucodCreater(82136, '{"state":"OFF"}', "kitchen")
+    heucodCreater(82136, '{"state":"ON"}', "kitchen")
     time.sleep(3)
-    heucodCreater(82136, "{state:OFF}", "kitchen")
+    heucodCreater(82136, '{"state":"OFF"}', "kitchen")
     time.sleep(4)
     #def heucodCreater(_enum, _desc, _location):
     # Tracking id: 82099, CookingOperation: 82136
