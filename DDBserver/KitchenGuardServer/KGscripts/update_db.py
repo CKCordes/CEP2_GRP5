@@ -1,5 +1,3 @@
-import sqlite3
-import socket
 from ..models import Event, Sensor, Patient
 
 

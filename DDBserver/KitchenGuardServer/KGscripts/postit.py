@@ -12,11 +12,11 @@ heucod = HeucodEvent()
 # == Event ==
 heucod.id_ = uuid.uuid4()
 heucod.event_type = "BasicEvent"
-heucod.event_type_enum = 81325
-heucod.description = "some data"
+heucod.event_type_enum = 82136 # Tracking id: 82099, CookingOperation: 82136
+heucod.description = "{State:False}" # Tracking: {Occupied:False}, Cooking: "{State:True}"
 heucod.advanced = ""
 heucod.timestamp = time.time()
-heucod.start_time = -1
+heucod.start_time = time.time()
 heucod.end_time = -1
 heucod.length = -1
 heucod.sensor_blind_duration = -1
@@ -41,9 +41,9 @@ heucod.site = ""
 heucod.room = "" 
 
 # == Sensor ==
-heucod.sensor_id = "lille_sensor"
+heucod.sensor_id = "kitchen"
 heucod.sensor_type = ""
-heucod.sensor_location = ""
+heucod.sensor_location = "kitchen"
 heucod.sensor_rtc_clock = True
 heucod.device_model = ""
 heucod.device_vendor = ""

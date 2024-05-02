@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link type="text/css" src = "../static/index.css">
+    <script type="text/js" src = "../static/scripts.js"></script>
+    <style>
+        .data-representation {
+            display: none;
+        }
+        .active {
+            display: block;
+        }
+
+        #tableContainer{
+            max-width: 75%;
+            overflow-x: auto;
+        }
+
+        canvas {
+            max-height: 60vh; /*vh = viewport height*/ 
+            max-width: 75%;
+        }
+
+    </style>
+
+    
+    <!-- Include DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.0.5/css/dataTables.dataTables.min.css">
+    
+    <!-- Include jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <!-- Include DataTables JS -->
+    <script src="https://cdn.datatables.net/2.0.5/js/dataTables.min.js"></script>
+
+    <!--Chart.js-->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <title>KitchenGuard</title>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <h1>Homehelper 9000</h1>
+    </header>
+
+    <!-- This is some django to html language. It looks weird but gets the job done-->
+    <select id="patientSelect" onchange="handlePatientChange()"><option value="">Select a patient</option>
+        {% for patient in patients %}
+            <option value="{{ patient.patient_id }}">{{ patient.patient_id }}</option>
+        {% endfor %}</select>
+
+
+    <br>
+
+    <button id="toggleButton">Toggle graph view</button>
+
+    <br>
+    
+
+    <div id="eventButtons">
+        <button id = "allEvents" >All events</button>
+        <button id = "cookingEvents">Cooking events</button>
+        <button id = "awayTime">Away time</button>
+    </div>
+
+    <div id="tableContainer" class = "data-representation active">
+        <table id="dataTable" class = "data-representation active"></table>
+    </div>
+
+    <div id="chartContainer" class = "data-representation ">
+        <canvas id="dataChart" width="400" height="400"></canvas>
+    </div>
+
+    <script>
+        // Toggle button action. Is will work in progress.
+        document.getElementById('toggleButton').addEventListener('click', function() {
+            // Toggle the visibility of the data representations
+            document.getElementById('tableContainer').classList.toggle('active');
+            document.getElementById('chartContainer').classList.toggle('active');
+        });
+
+        // Sets eventlisteners on all buttons
+        setEventListernesOnButton("allEvents", function () {getFromDatabase('api/allEvents')});
+        setEventListernesOnButton("cookingEvents", function() {getFromDatabase('api/cookingEvents')});
+        setEventListernesOnButton("awayTime", function () {getFromDatabase('api/awayTime')});
+        
+        function setEventListernesOnButton(buttonId, func){
+            var button = document.getElementById(buttonId);
+            button.addEventListener("click", func);
+        }
+        
+        // Handles when a new patient is chosen in the dropdown
+        function handlePatientChange(){
+            var allEventsButton = document.getElementById("allEvents");
+            allEventsButton.click()
+        }
+
+        // Converts the fetched data into an array of array. This is helpfull for DataTable. 
+        function fetchedDataToArray(data){
+            arr = [];
+            data.data.forEach(item => {
+                    var row = [];
+                    for (const [key, value] of Object.entries(item)){
+                        row.push(value.toString());
+                    }
+                    arr.push(row);
+                })
+            return arr;
+        }
+
+        // Converts fetched data into headers for the table. 
+        function keysToHeaders(data){
+            
+            arr = [];
+
+            keys = Object.keys(data.data[0]);
+
+            keys.forEach(key =>{
+                arr.push({title: key.toString()})
+            })
+
+            return arr;
+        }
+
+        // Fetches data from the database. 
+        function getFromDatabase(databaseURL) {
+
+            $("#dataTable").show(); // This makes sure you can't change data with table hidden. 
+
+            var selectedPatientId = document.getElementById('patientSelect').value;
+
+            if (selectedPatientId){
+                var fullUrl = databaseURL + '?patient_id=' + selectedPatientId;
+                fetch(`/${fullUrl}`)
+                    .then(response => response.json())
+                    .then(data => {
+
+                        setupTable(data);
+
+                        // Cannot display allEvents yet. 
+                        if(databaseURL == "api/allEvents"){
+                            return;
+                        }
+                        
+                        setUpChart(data, 100);
+                    })
+
+                    // Error handling
+                    .catch(error => console.log("Error", error));
+            } else {
+                alert("Please select a patient");
+            }   
+        }
+
+        function setupTable(fetchedData){
+            // Clears table
+            $('#dataTable').DataTable().destroy();
+
+            // Extract headers from the data. Will be used as table headers
+            var keyHeaders = keysToHeaders(fetchedData);
+            // Organizing data into array of arrays. 
+            var eventData = fetchedDataToArray(fetchedData);
+
+            // Not entirely sure what this does, but overall it sets up the data for DataTable to read below. 
+            // For reference: https://datatables.net/examples/data_sources/js_array
+            eventData.forEach(r => {
+                var div1 = document.createElement('div');
+                div1.innerHTML = r[1];
+                r[1] = div1;
+            
+                var div3 = document.createElement('div');
+                div3.innerHTML = r[3];
+                r[3] = div3;
+            })
+
+            // Creates a datatable in our table called dataTable. 
+            new DataTable('#dataTable', {
+            columns: keyHeaders,
+            data: eventData
+            });
+            
+        }
+
+        // Setting up Chart.js
+        function setUpChart(fetchedData, n){
+
+            if (fetchedData.data.length < n) n = fetchedData.data.length;
+
+            var ctx = document.getElementById('dataChart').getContext('2d');
+           
+            // deletes chart to create a new. 
+            var chart = Chart.getChart(ctx); 
+            if(chart){
+                chart.destroy();
+            }
+            
+            
+            var myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels:     getDatesFromData(fetchedData, n),
+                    datasets:   [{
+                        label: 'Dataset',
+                        data: getDurationFromData(fetchedData, n),
+                        borderWidth: 1,
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                        }
+                    }
+                }
+            });
+            myChart.update();
+        };
+
+        function getDatesFromData(fetchedData, n){
+            arr = [];
+            for(var i = 0; i < n; i++){
+                arr.push(fetchedData.data[i].timestamp)                
+            }
+            return arr;
+        };
+
+        function getDurationFromData(fetchedData, n){
+            arr = [];
+            for(var i = 0; i < n; i++){
+                arr.push(fetchedData.data[i].length)                
+            }
+            return arr;
+        };
+
+
+    </script>
+
+</body>
+</html>
