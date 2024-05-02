@@ -79,8 +79,8 @@ class KitchenGuardOperator(Operator):
             self.log("Turning off alarm")
             self.alarming = False
             self.alarm_resident("OFF")
-             
-        
+            
+                    
     def alarm_resident(self, state):
         stove_plug_device = self.actuator_devices.get_type("led")[0]
         

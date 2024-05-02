@@ -51,6 +51,9 @@ class WebClient:
         
         heucod = HeucodEvent()
         
+        
+        
+        
         # == Event ==
         heucod.id_ = uuid.uuid4()
         heucod.event_type = "BasicEvent"

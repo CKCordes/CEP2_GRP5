@@ -1,8 +1,8 @@
-from .HomeHelper.Model import DevicesModel, ZigbeeDevice, LEDstrip, Patient
-from .HomeHelper.WebClient import WebClient
-from .KitchenStoveTracker import KitchenStoveTracker
-from .RoomTracker import RoomTracker
-from .KitchenGuardOperator import KitchenGuardOperator
+from ..HomeHelper.Model import DevicesModel, ZigbeeDevice, LEDstrip, Patient
+from ..HomeHelper.WebClient import WebClient
+from ..KitchenStoveTracker import KitchenStoveTracker
+from ..RoomTracker import RoomTracker
+from ..KitchenGuardOperator import KitchenGuardOperator
 from paho.mqtt import publish, subscribe
 from time import sleep
 import json
