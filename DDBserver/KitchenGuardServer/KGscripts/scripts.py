@@ -8,18 +8,23 @@ def getCookingEvents(cookingEvents):
     events = []
     
     for event in cookingEvents:
-        desc = json.loads(event.description)
+       
+        desc = json.loads(event.description.replace("'", "\""))
+        if not 'power' in desc:
+            continue
+                
         
-        # If resident isn't cooking but have turned the stove on
-        if not cooking and desc["state"] == "ON":
+        # If resident isn't cooking but have turned the stove on. Power > 3 is equal to 'state': 'ON'
+        if not cooking and desc["power"] > 3:
             cooking = True
             curr_event = event
+            curr_event.start_time = event.timestamp
             continue
         
-        # If resident IS cooking and stove is turned off. 
-        if cooking and desc["state"] == "OFF":
+        # If resident IS cooking and stove is turned off. Power < 3 is equal to 'state': 'OFF'
+        if cooking and desc["power"] < 3:
             cooking = False
-            curr_event.end_time = event.start_time
+            curr_event.end_time = event.timestamp
             curr_event.length = curr_event.end_time - curr_event.start_time
 
             events.append(curr_event)        
@@ -33,22 +38,29 @@ def getTrackingEvents(trackingEvents):
     
     events = []
     
+
     for event in trackingEvents:
-        print(event.description)
-        desc = json.loads(event.description)
-        print(desc["occupancy"])
+        
+        try:
+            cleanedDesc = event.description.replace("'", '"').replace("False", "false").replace("True", "true")
+            desc = json.loads(cleanedDesc)
+        except json.JSONDecodeError:
+            print("Invalid JSON in description:", event.description)
+        
+        
         
         
         if not rooms.get(event.sensor.sensor_location) and desc["occupancy"]:
             rooms[event.sensor.sensor_location] = True           
             curr_events[event.sensor.sensor_location] = event
+            curr_events[event.sensor.sensor_location].start_time = event.timestamp          
             continue
         
         if rooms.get(event.sensor.sensor_location) and not desc["occupancy"]:
             rooms[event.sensor.sensor_location] = False
             if event.sensor.sensor_location in curr_events:
                 curr_event = curr_events[event.sensor.sensor_location]
-                curr_event.end_time = event.start_time
+                curr_event.end_time = event.timestamp
                 curr_event.length = curr_event.end_time - curr_event.start_time
             
                 events.append(curr_event)

@@ -136,9 +136,16 @@
                 fetch(`/${fullUrl}`)
                     .then(response => response.json())
                     .then(data => {
+                        
+                        // If data is empty we can't handle it. So we notify user
+                        if(data.data.length <= 1){
+                            alert(`Currently no data available about ${selectedPatientId}.`);
+                            return;
+                        }
+
 
                         setupTable(data);
-
+                        
                         // Cannot display allEvents yet. 
                         if(databaseURL == "api/allEvents"){
                             return;

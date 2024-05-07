@@ -97,7 +97,7 @@ class WebClient:
         heucod.caregiver_id = 1
         heucod.monitor_id = 1
         heucod.location = ""
-        heucod.street_adress = "hej"
+        heucod.street_adress = ""
         heucod.city = "Aarhus"
         heucod.postal_code = 8200
         heucod.site = ""
