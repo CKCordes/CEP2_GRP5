@@ -143,6 +143,8 @@
                             return;
                         }
 
+                        // Flips data, so newest input is first.
+                        data.data = data.data.reverse();
 
                         setupTable(data);
                         
@@ -151,7 +153,7 @@
                             return;
                         }
                         
-                        setUpChart(data, 100);
+                        setUpChart(data, 10);
                     })
 
                     // Error handling
@@ -194,6 +196,7 @@
         function setUpChart(fetchedData, n){
 
             if (fetchedData.data.length < n) n = fetchedData.data.length;
+            //fetchedData.data = fetchedData.data.reverse();
 
             var ctx = document.getElementById('dataChart').getContext('2d');
            
