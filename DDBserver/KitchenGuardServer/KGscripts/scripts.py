@@ -92,14 +92,15 @@ def eventsOverlaps(cEvent, tEvent):
         
 
 def serializeData(events):
-    arr = [{'event_id': event.event_id, 
+    arr = [{'patient': event.patient.patient_id,
             'sensor': event.sensor.sensor_id,
-            'patient': event.patient.patient_id,
+            'location': event.sensor.sensor_location,
             'event_type': event.event_type,
             'timestamp': epochToDateTime(event.timestamp),
             'start_time': epochToDateTime(event.start_time),
             'end_time': epochToDateTime(event.end_time),
-            'length':event.length / 3600, # second / 3600 seconds pr hour = hours
+            'length': round(event.length / 60, 2), # second / 60 seconds pr minute = minutes
+            'event_id': event.event_id, 
             } for event in events]
     return arr
     
