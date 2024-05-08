@@ -65,6 +65,15 @@
         <button id = "awayTime">Away time</button>
     </div>
 
+    <div id="AwayTimeData" class = "data-representation">
+        <h3>Frequency of away time: </h3>
+        <h3>Amount of away time: </h3>
+    </div>
+
+    <div id="CookingTimeData" class = "data-representation">
+        <h3>Amount of cooking time: </h3>
+    </div>
+
     <div id="tableContainer" class = "data-representation active">
         <table id="dataTable" class = "data-representation active"></table>
     </div>
@@ -83,8 +92,14 @@
 
         // Sets eventlisteners on all buttons
         setEventListernesOnButton("allEvents", function () {getFromDatabase('api/allEvents')});
+
         setEventListernesOnButton("cookingEvents", function() {getFromDatabase('api/cookingEvents')});
+        setEventListernesOnButton("cookingEvents", function() {document.getElementById('AwayTimeData').classList.toggle('active');});
+        setEventListernesOnButton("cookingEvents", function() {document.getElementById('CookingTimeData').classList.remove('active');});
+        
         setEventListernesOnButton("awayTime", function () {getFromDatabase('api/awayTime')});
+        setEventListernesOnButton("awayTime", function() {document.getElementById('CookingTimeData').classList.toggle('active');});
+        setEventListernesOnButton("awayTime", function() {document.getElementById('AwayTimeData').classList.remove('active');});
         
         function setEventListernesOnButton(buttonId, func){
             var button = document.getElementById(buttonId);
