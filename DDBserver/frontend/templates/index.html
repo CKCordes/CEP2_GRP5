@@ -5,21 +5,98 @@
     <link type="text/css" src = "../static/index.css">
     <script type="text/js" src = "../static/scripts.js"></script>
     <style>
+        body {
+            background-color: #f5edda; /* Soft dusty color */
+        }
+
+        header h1 {
+            margin-top: 2%; /* Remove default margin */
+            text-align: center;
+        }
+
+        #patientSelect,
+        #toggleButton {
+            padding: 10px 20px; /* Add padding */
+            margin-bottom: 20px; /* Add space at the bottom */
+            /* Add your desired styling */
+            background-color: #ddd; /* Light gray background */
+            /*border: none; /* Remove default border */
+            border-radius: 5px; /* Rounded corners */
+            cursor: pointer; /* Change cursor on hover */
+        } 
+
+        #eventButtons {
+            padding: 10px; /* Add padding around the container */
+            margin-bottom: 20px; /* Add space at the bottom */
+        }
+        
+        #eventButtons button {
+            padding: 10px 20px; /* Add padding */
+            /* Add your desired styling */
+            background-color: #ddd; /* Light gray background */
+            border: none; /* Remove default border */
+            border-radius: 5px; /* Rounded corners */
+            cursor: pointer; /* Change cursor on hover */
+        }   
+        
+        /* Center Data Displayers */
+        #dataDisplayers {
+            text-align: center;
+            padding: 20px; /* Add padding */
+            
+        }
+
         .data-representation {
             display: none;
         }
         .active {
             display: block;
+            margin: 0 auto; /* Auto margin to center horizontally */
         }
 
         #tableContainer{
             max-width: 75%;
             overflow-x: auto;
+            background-color: #eae6dce1;
+            border: 1px solid #ccc; /* Add thin border */
+            padding: 1%;
         }
 
         canvas {
             max-height: 60vh; /*vh = viewport height*/ 
             max-width: 75%;
+            background-color: #f3f0e8e1;
+        }  
+
+        ._activeButton {
+            background-color: #847e7e !important; /* Slightly darker background color */
+            color: #fff; /* White text color */
+        } 
+        
+        #container {
+            width: 80%; /* Set a width for the container */
+            margin: 0 auto; /* Auto margin to center horizontally */
+            padding: 20px; /* Add space to each side */
+            background-color: #f8f6f1; /* Slightly whiter background color */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Small shadow */
+        }
+
+        #freqAndAmount{
+            width: 95%; /* Set a width for the div */
+            margin-right: auto; /* Auto margin on the right side */
+            margin-left: auto; /* No margin on the left side */
+            padding: 20px; /* Add padding */
+            background-color: #f8f6f1; /* Slightly whiter background color */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Small shadow */
+        }
+        #frequencySelector,
+        #AwayTimeData,
+        #CookingTimeData,
+        h2,
+        select {
+            text-align: left !important;
+            margin-right: auto !important; /* Auto margin on the right side */
+            margin-left: 0 !important; /* No margin on the left side */
         }
 
     </style>
@@ -40,66 +117,117 @@
     <title>KitchenGuard</title>
 </head>
 <body>
-    <!-- Header -->
-    <header>
-        <h1>Homehelper 9000</h1>
-    </header>
+    <div id="container">
+        <!-- Header -->
+        <header>
+            <h1>Homehelper 9000</h1>
+        </header>
 
-    <!-- This is some django to html language. It looks weird but gets the job done-->
-    <select id="patientSelect" onchange="handlePatientChange()"><option value="">Select a patient</option>
-        {% for patient in patients %}
-            <option value="{{ patient.patient_id }}">{{ patient.patient_id }}</option>
-        {% endfor %}</select>
+        <!-- This is some django to html language. It looks weird but gets the job done-->
+        <select id="patientSelect" onchange="handlePatientChange()"><option value="">Select a patient</option>
+            {% for patient in patients %}
+                <option value="{{ patient.patient_id }}">{{ patient.patient_id }}</option>
+            {% endfor %}</select>
 
 
-    <br>
+        <button id="toggleButton">Toggle graph view</button>
+        
+        <br>
 
-    <button id="toggleButton">Toggle graph view</button>
+        <div id="eventButtons">
+            <button id = "allEvents" value = "All Events" onclick="setActiveButton('allEvents')" >All events</button>
+            <button id = "cookingEvents" value = "Cooking Events" onclick="setActiveButton('cookingEvents')">Cooking events</button>
+            <button id = "awayTime" value = "Away Time" onclick="setActiveButton('awayTime')">Away time</button>
+        </div>
 
-    <br>
-    
 
-    <div id="eventButtons">
-        <button id = "allEvents" >All events</button>
-        <button id = "cookingEvents">Cooking events</button>
-        <button id = "awayTime">Away time</button>
-    </div>
+        <div id="freqAndAmount" class = "data-representation">
+            <select id="frequencySelector" onchange="clickActiveButton()">
+                <option value="7" selected>7 days</option>
+                <option value="14">14 days</option>
+                <option value="30">30 days</option>
+              </select>
 
-    <div id="AwayTimeData" class = "data-representation">
-        <h3>Frequency of away time: </h3>
-        <h3>Amount of away time: </h3>
-    </div>
+            <h2 id="freqAndAmountHeader"></h2>
 
-    <div id="CookingTimeData" class = "data-representation">
-        <h3>Amount of cooking time: </h3>
-    </div>
+            <div id="AwayTimeData" class = "data-representation">
+                <h3 id="freqOfAwayTime">Frequency of away time: </h3>
+                <h3 id="amountOfAwayTime">Amount of away time: </h3>
+            </div>
 
-    <div id="tableContainer" class = "data-representation active">
-        <table id="dataTable" class = "data-representation active"></table>
-    </div>
+            <div id="CookingTimeData" class = "data-representation">
+                <h3 id="amountOfCooking">Amount of cooking time: </h3>
+            </div>
+        </div> 
 
-    <div id="chartContainer" class = "data-representation ">
-        <canvas id="dataChart" width="400" height="400"></canvas>
+        <div id="dataDisplayers">
+            <h2 id="dataHeader"></h2>
+            <div id="tableContainer" class = "data-representation active">
+                <table id="dataTable" class = "data-representation active"></table>
+            </div>
+
+            <div id="chartContainer" class = "data-representation ">
+                <h2 id="tableHeader"></h2>
+                <canvas id="dataChart" width="400" height="400"></canvas>
+            </div>
+        </div>
     </div>
 
     <script>
-        // Toggle button action. Is will work in progress.
+        window.onload = function() {
+            getFromDatabase('api/allEvents');
+        };
+    </script>
+
+    <script>
+        // Toggle button action. Is still work in progress.
         document.getElementById('toggleButton').addEventListener('click', function() {
             // Toggle the visibility of the data representations
             document.getElementById('tableContainer').classList.toggle('active');
             document.getElementById('chartContainer').classList.toggle('active');
         });
 
-        // Sets eventlisteners on all buttons
-        setEventListernesOnButton("allEvents", function () {getFromDatabase('api/allEvents')});
+        function clickActiveButton() {
+            var buttonToClick = document.getElementById(activeButton);
+            buttonToClick.click();
+        }
 
+        function setActiveButton(buttonId) {
+            var header = document.getElementById("dataHeader");
+            var button = document.getElementById(buttonId);
+            header.innerHTML = `Showing all entries of ${button.value}`;
+
+            var oldActiveButton = document.getElementById(activeButton);
+            if(oldActiveButton) {
+                oldActiveButton.classList.remove("_activeButton")
+            };
+
+            button.classList.add("_activeButton");
+
+            activeButton = buttonId;
+        }
+
+
+
+        // Sets eventlisteners on all buttons
+        setEventListernesOnButton("allEvents", function () {getFromDatabase('api/allEvents')}); 
+        setEventListernesOnButton("allEvents", function() {document.getElementById('AwayTimeData').classList.remove('active');});
+        setEventListernesOnButton("allEvents", function() {document.getElementById('CookingTimeData').classList.remove('active');});
+        setEventListernesOnButton("allEvents", function() {document.getElementById('freqAndAmount').classList.remove('active');});
+
+        // COOKING BUTTON
         setEventListernesOnButton("cookingEvents", function() {getFromDatabase('api/cookingEvents')});
-        setEventListernesOnButton("cookingEvents", function() {document.getElementById('AwayTimeData').classList.toggle('active');});
-        setEventListernesOnButton("cookingEvents", function() {document.getElementById('CookingTimeData').classList.remove('active');});
+        setEventListernesOnButton("cookingEvents", function() {document.getElementById('AwayTimeData').classList.remove('active');});
+        setEventListernesOnButton("cookingEvents", function() {document.getElementById('CookingTimeData').classList.add('active');});
+        setEventListernesOnButton("cookingEvents", function() {document.getElementById('freqAndAmount').classList.add('active');});
         
+        // AWAY TIME BUTTON
         setEventListernesOnButton("awayTime", function () {getFromDatabase('api/awayTime')});
-        setEventListernesOnButton("awayTime", function() {document.getElementById('CookingTimeData').classList.toggle('active');});
-        setEventListernesOnButton("awayTime", function() {document.getElementById('AwayTimeData').classList.remove('active');});
+        setEventListernesOnButton("awayTime", function() {document.getElementById('CookingTimeData').classList.remove('active');});
+        setEventListernesOnButton("awayTime", function() {document.getElementById('AwayTimeData').classList.add('active');});
+        setEventListernesOnButton("awayTime", function() {document.getElementById('freqAndAmount').classList.add('active');});
+
+        var activeButton = 'allEvents';
         
         function setEventListernesOnButton(buttonId, func){
             var button = document.getElementById(buttonId);
@@ -146,36 +274,103 @@
 
             var selectedPatientId = document.getElementById('patientSelect').value;
 
-            if (selectedPatientId){
-                var fullUrl = databaseURL + '?patient_id=' + selectedPatientId;
-                fetch(`/${fullUrl}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        
-                        // If data is empty we can't handle it. So we notify user
-                        if(data.data.length <= 1){
-                            alert(`Currently no data available about ${selectedPatientId}.`);
-                            return;
-                        }
-
-                        // Flips data, so newest input is first.
-                        data.data = data.data.reverse();
-
-                        setupTable(data);
-                        
-                        // Cannot display allEvents yet. 
-                        if(databaseURL == "api/allEvents"){
-                            return;
-                        }
-                        
-                        setUpChart(data, 10);
-                    })
-
-                    // Error handling
-                    .catch(error => console.log("Error", error));
-            } else {
+            if (!selectedPatientId){
                 alert("Please select a patient");
-            }   
+                return;
+            }
+
+            var fullUrl = databaseURL + '?patient_id=' + selectedPatientId;
+            fetch(`/${fullUrl}`)
+                .then(response => response.json())
+                .then(data => {
+                    
+                    // If data is empty we can't handle it. So we notify user
+                    if(data.data.length <= 1){
+                        alert(`Currently no data available about ${selectedPatientId}.`);
+                        return;
+                    }
+                    // Flips data, so newest input is first.
+                    data.data = data.data.reverse();
+                    var selector = document.getElementById("frequencySelector");
+                    var numberOfDays = selector.value;
+                    changeAmountAndFreq(data, databaseURL, numberOfDays);
+
+                    setupTable(data);
+                    
+                    // Cannot display allEvents yet. 
+                    if(databaseURL == "api/allEvents"){
+                        return;
+                    }
+                    
+                    setUpChart(data, 10);
+                })
+                // Error handling
+                .catch(error => console.log("Error", error));
+        }    
+
+        function changeAmountAndFreq(fetchedData, url, n){
+            if(url == "api/allEvents") return;
+
+            var eventsWithinTimeframe = getEventsWithinTimeframe(fetchedData, n);
+            var selector = document.getElementById("frequencySelector");
+            // var clone = selector.cloneNode(true);
+            // selector.replaceWith(clone);
+
+            if(url == "api/cookingEvents"){
+
+                var header = document.getElementById("freqAndAmountHeader");
+                header.innerHTML = `Amount of cooking within last ${selector.value} days`; 
+
+                var amount = 0;
+                for(let i = 0; i < eventsWithinTimeframe.length; i++){
+                    amount += eventsWithinTimeframe[i].length;                    
+                }
+
+                var cookingAmount = document.getElementById("amountOfCooking");
+                cookingAmount.innerHTML = `Amount of cooking time: ${amount} minutes`;
+            }
+
+            if(url == "api/awayTime"){
+
+                var header = document.getElementById("freqAndAmountHeader");
+                header.innerHTML = `Frequency and amount of away time within last ${selector.value} days`;
+
+                var amount = 0;
+                var freq = 0;
+                for(let i = 0; i < eventsWithinTimeframe.length; i++){
+                    amount += eventsWithinTimeframe[i].length;  
+                    freq++;                  
+                }
+
+                var cookingAmount = document.getElementById("amountOfAwayTime");
+                cookingAmount.innerHTML = `Amount of away time: ${amount} minutes`;
+
+                var cookingAmount = document.getElementById("freqOfAwayTime");
+                cookingAmount.innerHTML = `Frequency of away time: ${freq} times`;
+
+            }        
+            
+        }
+        
+        function getEventsWithinTimeframe(fetchedData, n){
+            var eventsWithinTimeframe = [];
+
+            for (let item of fetchedData.data){
+                dateString = item.start_time.split(" ");
+                var dateObject = new Date(dateString); 
+                const today = new Date();
+                var nDaysAgo = new Date(today);
+                nDaysAgo.setDate(nDaysAgo.getDate() - n);
+                
+                
+                if(dateObject > nDaysAgo) {
+                    eventsWithinTimeframe.push(item);
+                } 
+                else {
+                    break;
+                }
+            }
+            return eventsWithinTimeframe;   
         }
 
         function setupTable(fetchedData){

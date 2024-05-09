@@ -7,12 +7,67 @@
     <title>Login</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
+<style>
+    body {
+        background-color: #eaeaea; /* Dusty color background */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+    }
+
+    #loginForm {
+        background-color: #f5f5f5; /* Slightly different color for login form */
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Small shadow */
+    }
+
+    h1 {
+        text-align: center;
+    }
+    
+    h2 {
+        text-align: center;
+    }
+
+    form {
+        display: flex;
+        flex-direction: column;
+    }
+
+    form input[type="text"],
+    form input[type="password"] {
+        margin-bottom: 10px;
+        padding: 8px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+    }
+
+    form button {
+        padding: 10px;
+        border: none;
+        border-radius: 5px;
+        background-color: #007bff; /* Blue color for button */
+        color: #fff;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    form button:hover {
+        background-color: #0056b3; /* Darker blue on hover */
+    }
+</style>
 <body>
-    <h2>Log In</h2>
-    <form method="post" action="{% url 'login' %}">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Log In</button>
-    </form>
+    <div id="loginForm">
+        <h1>Home Helper</h1>
+        <h2>Log in</h2>
+        <form method="post" action="{% url 'login' %}">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Log In</button>
+        </form>
+    </div>
 </body>
 </html>
