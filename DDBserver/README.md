@@ -36,6 +36,38 @@ DDBserver/
 ```
 
 ## Database structure
+The database is a .sqlite file as this is default for a Django project. 
+The database mainly consists of three tables, Event, Sensor, and Patient. 
+Each event is coupled to one sensor and one patient through the sensor_id and patient_id. 
+
+```
+  Event Table
++-----------+-----------+------------+-----+
+| event_id  | sensor_id | patient_id | ... |
++-----------+-----------+------------+-----+
+|           |           |            |     |
+|           |           |            |     |
++-----------+-----------+------------+-----+
+
+  Sensor Table
++-----------+-----+
+| sensor_id | ... |
++-----------+-----+
+|           |     |
+|           |     |
++-----------+-----+
+
+  Patient Table
++------------+-----+
+| patient_id | ... |
++------------+-----+
+|            |     |
+|            |     |
+|            |     |
++------------+-----+
+
+```
 
 
-## Run the server locally 
+
+
