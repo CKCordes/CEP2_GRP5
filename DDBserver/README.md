@@ -14,7 +14,7 @@ From here run the following command:
 ```
 python manage.py runserver
 ```
-
+When the server is running it can be accessed on `127.0.0.1/8000`.
 
 ## Directory structure
 The directory structure is mainly based on how Django structures its directories. The directory consists of "DDBserver" which is the project directory, "frontend" which handles the frontend template files, and "KitchenGuardServer" which is responsible for handling the database. 
