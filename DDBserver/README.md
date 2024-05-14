@@ -5,7 +5,7 @@ Django is a Python web framework known for its rapid development and clean desig
 
 ## Directory structure
 The directory structure is mainly based on how Django structures its directories. The directory consists of "DDBserver" which is the project directory, "frontend" which handles the frontend template files, and "KitchenGuardServer" which is responsible for handling the database. 
-
+```
 DDBserver/
 ├── DDBserver/
 │   ├── ..
@@ -20,7 +20,7 @@ DDBserver/
     |       |
     │       └── .. 
     └── ..
-
+```
 
 ## Database structure
 
