@@ -41,7 +41,7 @@ def cookingEvents(request):
         if patient_id:
             patient = Patient.objects.get(patient_id = patient_id)
             cookingEvents = Event.objects.filter(event_type_enum = 82136, patient = patient)
-            trackingEvents = Event.objects.filter(event_type_enum = 82099, patient=patient).only(sensor__sensor_location = 'kitchen')
+            
         else:
             cookingEvents = Event.objects.none()
         # 82136 enum is CookingDeviceUsage - CookingDeviceUsage is the

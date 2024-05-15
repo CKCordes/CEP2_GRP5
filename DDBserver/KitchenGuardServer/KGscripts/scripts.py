@@ -86,7 +86,7 @@ def getOverlapingEvents(cookingEvents, trackingEvents):
 def forcedshut(event, events):
     val = ""
     for tEvent in events:
-        if eventsOverlaps(event, tEvent) and event.event_type_enum == 82136:
+        if eventsOverlaps(event, tEvent) and event.event_type_enum == 82136 and tEvent.event_type_enum == 82099:
             if (event.end_time - tEvent.end_time >= 60 and tEvent.sensor.sensor_location == "kitchen"):
                 val = "true"
                 return val
