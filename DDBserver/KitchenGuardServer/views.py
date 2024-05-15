@@ -41,14 +41,14 @@ def cookingEvents(request):
         if patient_id:
             patient = Patient.objects.get(patient_id = patient_id)
             cookingEvents = Event.objects.filter(event_type_enum = 82136, patient = patient)
-
+            trackingEvents = Event.objects.filter(event_type_enum = 82099, patient=patient).only(sensor__sensor_location = 'kitchen')
         else:
             cookingEvents = Event.objects.none()
         # 82136 enum is CookingDeviceUsage - CookingDeviceUsage is the
         
         # Cleaning cooking events 
-        comprisedCookingEvents = getCookingEvents(cookingEvents)
         
+        comprisedCookingEvents = getCookingEvents(cookingEvents)
         serialized_data = serializeData(comprisedCookingEvents)
         return JsonResponse({'data': serialized_data})    
         
@@ -76,7 +76,7 @@ def awayTime(request):
         comprisedTrackingEvents = getTrackingEvents(trackingEvents)
 
         overlappingEvents = getOverlapingEvents(comprisedCookingEvents, comprisedTrackingEvents)
-
+ 
         serialized_data = serializeData(overlappingEvents)
         return JsonResponse({'data': serialized_data}) 
 

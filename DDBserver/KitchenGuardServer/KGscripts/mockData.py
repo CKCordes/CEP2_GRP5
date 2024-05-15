@@ -2,6 +2,7 @@ import requests
 import time
 from heucod import HeucodEvent
 import uuid
+import random
 
 def heucodCreater(_enum, _desc, _location):
     
@@ -19,7 +20,7 @@ def heucodCreater(_enum, _desc, _location):
     heucod.advanced = "v"
     heucod.timestamp = time.time()
     heucod.start_time = time.time()
-    heucod.end_time = -1
+    heucod.end_time = time.time() + random.random() * 120
     heucod.length = -1
     heucod.sensor_blind_duration = -1
     heucod.value = -1
@@ -80,10 +81,16 @@ def heucodCreater(_enum, _desc, _location):
         
 for i in range(1):
     heucodCreater(82136, '{"state":"ON"}', "kitchen")
+    heucodCreater(82099, '{"occupancy":true}', "kitchen")
+    time.sleep(2)
+    heucodCreater(82136, '{"state":"OFF"}', "kitchen")
+    
+    time.sleep(2)
     heucodCreater(82136, '{"state":"ON"}', "kitchen")
+    heucodCreater(82099, '{"occupancy":false}', "kitchen")
     time.sleep(2)
-    heucodCreater(82099, '{"occupancy":true}', "living room")
-    time.sleep(2)
+    heucodCreater(82136, '{"state":"OFF"}', "kitchen")
+    
     heucodCreater(82099, '{"occupancy":true}', "living room")
     heucodCreater(82099, '{"occupancy":true}', "living room")
     heucodCreater(82136, '{"state":"ON"}', "kitchen")

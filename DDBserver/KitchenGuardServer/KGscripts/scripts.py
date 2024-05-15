@@ -26,7 +26,6 @@ def getCookingEvents(cookingEvents):
             cooking = False
             curr_event.end_time = event.timestamp
             curr_event.length = curr_event.end_time - curr_event.start_time
-
             events.append(curr_event)        
         
     return events
@@ -62,7 +61,6 @@ def getTrackingEvents(trackingEvents):
                 curr_event = curr_events[event.sensor.sensor_location]
                 curr_event.end_time = event.timestamp
                 curr_event.length = curr_event.end_time - curr_event.start_time
-            
                 events.append(curr_event)
                
     return events
@@ -76,20 +74,29 @@ def epochToDateTime(epoch_timestamp):
 
 def getOverlapingEvents(cookingEvents, trackingEvents):
     overlappingEvents = []
-    
     for cEvent in cookingEvents:
         for tEvent in trackingEvents:
             if eventsOverlaps(cEvent, tEvent):
-                overlappingEvents.append(tEvent)
+                    overlappingEvents.append(tEvent)
     
     
     
     return overlappingEvents
 
+def forcedshut(event, events):
+    val = ""
+    for tEvent in events:
+        if eventsOverlaps(event, tEvent) and event.event_type_enum == 82136:
+            if (event.end_time - tEvent.end_time >= 60 and tEvent.sensor.sensor_location == "kitchen"):
+                val = "true"
+                return val
+            else: val = "false"
+    return val
+    
+                
 def eventsOverlaps(cEvent, tEvent):
     return ((cEvent.start_time < tEvent.start_time and cEvent.end_time > tEvent.start_time) or
             (cEvent.start_time > tEvent.start_time and cEvent.start_time < tEvent.end_time))
-        
 
 def serializeData(events):
     arr = [{'patient': event.patient.patient_id,
@@ -100,8 +107,9 @@ def serializeData(events):
             'start_time': epochToDateTime(event.start_time),
             'end_time': epochToDateTime(event.end_time),
             'length': round(event.length / 60, 2), # second / 60 seconds pr minute = minutes
+            'forced_shutdown': str(forcedshut(event, events)),
             'event_id': event.event_id, 
             } for event in events]
-    return arr
     
+    return arr
     

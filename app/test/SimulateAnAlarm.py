@@ -5,8 +5,8 @@ import json
 
 if __name__ == "__main__":
     
-    z2m_power_plug_name ="test_stove_actuator"
-    kitchen_sensor_name = "test_kitchen"
+    z2m_power_plug_name ="power_plug"
+    kitchen_sensor_name = "pir"
     sleep(2)
     publish.single(topic=f"zigbee2mqtt/led_strip/set",
                               payload=json.dumps({"state": "ON"}))
