@@ -3,8 +3,6 @@
 ## Prerequisite
 This project has multiple external dependencies, which are needed for the system to run. 
 - Django Framework
-- datetime library
-- json library
 
 ## Run server locally 
 By default the server will run on port 8000 on 127.0.0.1
