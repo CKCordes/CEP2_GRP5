@@ -45,9 +45,12 @@ if __name__ == "__main__":
     kitchen_guard_operator.start()
     
 
-    while True:
-        sleep(5)
-
+    try:
+        while True:
+            sleep(5)
+    except KeyboardInterrupt:
+        pass
     room_tracker.stop()
     stove_tracker.stop()
     kitchen_guard_operator.stop()
+    print("helleo")

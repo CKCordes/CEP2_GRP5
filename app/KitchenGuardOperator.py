@@ -27,6 +27,8 @@ class KitchenGuardOperator(Operator):
         
     # message: JSON
     def parse_message(self, tracker_name: str, json_message: any):
+        
+        # Messages from the KitchenStoveTracker
         if tracker_name == self.__stove_tracker_name:
             
             new_stove_state = json_message["StoveUse"]
@@ -37,13 +39,13 @@ class KitchenGuardOperator(Operator):
             
             if self.stove_active == True and new_stove_state == "OFF":
                 self.stove_active = False 
-                self.alarming = False
+
 
             if self.stove_active == False and new_stove_state == "ON":
                 self.stove_active = True
                 self.stove_turned_on = time() 
                 
-            
+        # Messages from RoomTracker
         if tracker_name == self.__room_tracker_name:
             kitchen_occupancy = json_message["occupancy"]["kitchen"]
                                

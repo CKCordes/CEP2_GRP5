@@ -95,6 +95,6 @@ class Tracker(ABC):
         while not self.__stop_sending_thread.is_set():
             sleep(5)
             publish.single(topic = self.name,
-                           payload=self.tracking_message())
+                           payload=self.tracking_message()) 
             
     

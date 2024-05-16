@@ -25,4 +25,4 @@ class RoomTracker(Tracker):
         self.__rooms_occupancy[device.location] = message.data["occupancy"]
 
     def tracking_message(self) -> str:
-        return json.dumps({"occupancy": self.__rooms_occupancy})
+        return json.dumps({"occupancy": self.__rooms_occupancy})    

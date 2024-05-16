@@ -16,7 +16,9 @@ Kitchen Guard is a distributed system aimed at enhancing kitchen safety, particu
 
 **Platform and Technologies:**
 
-- Server: Python Django
 - Sensors: Zigbee-based sensors
-- Controller: Raspberry Pi
-- Communication Protocol: MQTT with JSON encoding
+- Controller: Python application to run on Raspberry Pi
+- Server: Python Django
+- Communication Protocol
+  - Sensors <--> Controller : MQTT with JSON encoding.
+  - Controller <--> Server : HTTP
