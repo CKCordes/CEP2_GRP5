@@ -1,7 +1,8 @@
 # Kitchen Guard Server side
 
 ## Prerequisite
-This project has multiple external dependencies, which are needed for the system to run. 
+This project has multiple external dependencies, which are needed for the system to run. Most are installed by default. 
+Below are the ones not installed by default. 
 - Django Framework
 
 ## Run server locally 
