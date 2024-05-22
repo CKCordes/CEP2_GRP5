@@ -68,7 +68,7 @@ Each event is coupled to one sensor and one patient through the sensor_id and pa
 ```
 
 ## Create a superuser
-To get a correct set of credentials you'll have to create a Django `superuser`. This is needed as the login checks for a match in the Django superusers when a user tries to login. Alternatively, due to the current the low prioritization of security measures, you can bypass the login process by navigating to `127.0.0.1:8000/index`.
+To get a correct set of credentials you'll have to create a Django `superuser`. This is needed as the login checks for a match in the Django superusers when a user tries to login. Alternatively, due to the current low prioritization of security measures, you can bypass the login process by navigating to `127.0.0.1:8000/index`.
 ### To create a new superuser:
 Navigate to the directory containing the `manage.py` file. 
 In this repository that is `/DDBserver/`.
