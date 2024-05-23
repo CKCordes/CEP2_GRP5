@@ -26,3 +26,4 @@ class RoomTracker(Tracker):
 
     def tracking_message(self) -> str:
         return json.dumps({"occupancy": self.__rooms_occupancy})    
+    

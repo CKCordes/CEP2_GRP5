@@ -12,8 +12,8 @@ if __name__ == "__main__":
     patient = Patient("Test_simulation_patient")
     
     # Room tracker
-    room_motion_sensors = DevicesModel([ZigbeeDevice("lille_sensor", "pir", "kitchen"),
-                                        ZigbeeDevice("stor_sensor", "pir", "livingroom"),])
+    room_motion_sensors = DevicesModel([ZigbeeDevice("Motion_sensor1", "pir", "kitchen"),
+                                        ZigbeeDevice("Motion_sensor2", "pir", "livingroom"),])
     room_tracker = RoomTracker("Room_Tracker", room_motion_sensors)
     
     # Stove tracker
@@ -31,8 +31,8 @@ if __name__ == "__main__":
                                                    [room_tracker.name, stove_tracker.name])
     
     # Database client
-    all_devices = DevicesModel([ZigbeeDevice("lille_sensor", "pir", "kitchen"),
-                                ZigbeeDevice("stor_sensor", "pir", "livingroom"),
+    all_devices = DevicesModel([ZigbeeDevice("Motion_sensor1", "pir", "kitchen"),
+                                ZigbeeDevice("Motion_sensor2", "pir", "livingroom"),
                                 ZigbeeDevice("smart_plug", "power_plug", "kitchen"),
                                 LEDstrip("led_strip", "led", "livingroom")])
     web_client = WebClient(patient, all_devices)
@@ -53,4 +53,4 @@ if __name__ == "__main__":
     room_tracker.stop()
     stove_tracker.stop()
     kitchen_guard_operator.stop()
-    print("helleo")
+    print("hello")

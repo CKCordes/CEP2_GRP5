@@ -20,7 +20,7 @@ class WebClient:
         self.__devices = devices
         self.__host = database_host
         self.__z2m_client = Zigbee2mqttClient(on_message_clbk = self.__event_received,
-                                              serving         = "WebClient")
+                                              serving         = self.name)
     
     def start(self) -> None:
         
@@ -51,15 +51,13 @@ class WebClient:
         # Retrieve the device ID from the topic.
         device_id = topics_tokens[1]
         
-        heucod = HeucodEvent()
-        
-        # Figure out eventtype
-        
         device = self.__devices.find(device_id)
         
         if device is None:
             self.log(f"Device{device_id} not found in webclient")
             return
+        
+        # Figure out eventtype
         
         event_type_ = "BasicEvent"
         event_type_enum_ = 81325
@@ -72,6 +70,7 @@ class WebClient:
             event_type_ = "CookingDeviceUsage"
             event_type_enum_ = 82136
         
+        heucod = HeucodEvent()
         # == Event ==
         heucod.id_ = uuid.uuid4()
         heucod.event_type = event_type_

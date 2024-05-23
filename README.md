@@ -1,10 +1,10 @@
 # Kitchen Guard Project
 
-**Introduction:**
+## Introduction
 
 Kitchen Guard is a distributed system aimed at enhancing kitchen safety, particularly for individuals facing cognitive challenges. The project addresses the problem of unattended stoves, which can pose significant risks in households. By designing, implementing, and testing a distributed kitchen guard system, we aim to create a safer kitchen environment.
 
-**Key Objectives:**
+## Key Objectives
 
 1. Detect when a user leaves the stove unattended for more than 20 minutes and automatically cut power, with reminders provided to the user.
 2. Cancel alerts immediately upon the user's return to the kitchen.
@@ -14,7 +14,17 @@ Kitchen Guard is a distributed system aimed at enhancing kitchen safety, particu
 6. Utilize movement sensors (PIR) and power plug control units for detection and reminders, with support provided for Zigbee-based sensors and Python code for Raspberry Pi.
 7. Implement support for MQTT protocol with JSON encoding, following HEUCOD recommendations.
 
-**Platform and Technologies:**
+## Applications
+
+This directory contains the following applications:
+
+- Kitchen Guard Application
+  - HomeHelper Library
+- Django Application
+  - Kitchen Guard Server (Database server)
+  - Kitchen Guard Client (User Interface)
+
+## Platform and Technologies
 
 - Sensors: Zigbee-based sensors
 - Controller: Python application to run on Raspberry Pi
